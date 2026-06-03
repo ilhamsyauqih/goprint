@@ -19,11 +19,11 @@
 
 ### A1 · Splash Screen & Onboarding
 
-- [ ] Buat `SplashScreen` — logo + animasi Lottie + background gradasi teal
-- [ ] Buat `OnboardingScreen` — 3 slide (PageView), indikator dots, tombol Skip & Next
-- [ ] Slide 1: ilustrasi upload file
-- [ ] Slide 2: ilustrasi kalkulasi harga
-- [ ] Slide 3: ilustrasi pengantaran + tombol "Mulai Sekarang"
+- [x] Buat `SplashScreen` — logo + animasi Lottie + background gradasi teal
+- [x] Buat `OnboardingScreen` — 3 slide (PageView), indikator dots, tombol Skip & Next
+- [x] Slide 1: ilustrasi upload file
+- [x] Slide 2: ilustrasi kalkulasi harga
+- [x] Slide 3: ilustrasi pengantaran + tombol "Mulai Sekarang"
 
 ### A2 · Autentikasi (Login & Register)
 
