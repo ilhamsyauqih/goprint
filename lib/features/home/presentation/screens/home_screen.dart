@@ -24,7 +24,8 @@ class HomeScreen extends StatelessWidget {
         slivers: [
           // ─── App Bar & Header ─────────────────────────────────────
           SliverAppBar(
-            expandedHeight: 180,
+            expandedHeight: 140,
+            toolbarHeight: 0, // Menghilangkan area kosong di atas search bar saat di-scroll
             floating: false,
             pinned: true,
             elevation: 0,
