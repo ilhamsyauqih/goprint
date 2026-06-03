@@ -103,10 +103,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              _DotIndicator(
-                length: _slides.length,
-                activeIndex: _currentPage,
-              ),
+              _DotIndicator(length: _slides.length, activeIndex: _currentPage),
               const SizedBox(height: 28),
               PrimaryButton(
                 label: _isLastPage ? 'Mulai Sekarang' : 'Next',
@@ -183,10 +180,7 @@ class _OnboardingSlide extends StatelessWidget {
 }
 
 class _DotIndicator extends StatelessWidget {
-  const _DotIndicator({
-    required this.length,
-    required this.activeIndex,
-  });
+  const _DotIndicator({required this.length, required this.activeIndex});
 
   final int length;
   final int activeIndex;

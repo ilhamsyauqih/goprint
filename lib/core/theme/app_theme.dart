@@ -73,9 +73,7 @@ class AppTheme {
         color: AppColors.lightCard,
         elevation: 2,
         shadowColor: Colors.black.withValues(alpha: 0.08),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -102,9 +100,7 @@ class AppTheme {
           color: AppColors.lightSubtleText,
           fontWeight: FontWeight.w500,
         ),
-        hintStyle: GoogleFonts.inter(
-          color: AppColors.lightSubtleText,
-        ),
+        hintStyle: GoogleFonts.inter(color: AppColors.lightSubtleText),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -151,9 +147,7 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         backgroundColor: AppColors.lightPrimaryText,
         contentTextStyle: GoogleFonts.inter(
           color: Colors.white,
@@ -168,9 +162,7 @@ class AppTheme {
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         side: BorderSide.none,
       ),
     );
@@ -241,9 +233,7 @@ class AppTheme {
         color: AppColors.darkSurface,
         elevation: 2,
         shadowColor: Colors.black.withValues(alpha: 0.24),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -270,9 +260,7 @@ class AppTheme {
           color: AppColors.darkMutedText,
           fontWeight: FontWeight.w500,
         ),
-        hintStyle: GoogleFonts.inter(
-          color: AppColors.darkMutedText,
-        ),
+        hintStyle: GoogleFonts.inter(color: AppColors.darkMutedText),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -319,9 +307,7 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         backgroundColor: AppColors.darkElevated,
         contentTextStyle: GoogleFonts.inter(
           color: AppColors.darkPrimaryText,
@@ -337,9 +323,7 @@ class AppTheme {
           fontWeight: FontWeight.w500,
           color: AppColors.teal200,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         side: BorderSide.none,
       ),
     );
@@ -348,9 +332,6 @@ class AppTheme {
   // ─── Helper ──────────────────────────────────────────────────────
 
   static TextTheme _applyTextThemeColors(TextTheme base, Color color) {
-    return base.apply(
-      bodyColor: color,
-      displayColor: color,
-    );
+    return base.apply(bodyColor: color, displayColor: color);
   }
 }

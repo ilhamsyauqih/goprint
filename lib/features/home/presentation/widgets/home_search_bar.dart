@@ -4,10 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 
 /// Bar pencarian mengambang (floating) di bawah header.
 class HomeSearchBar extends StatelessWidget {
-  const HomeSearchBar({
-    this.onTap,
-    super.key,
-  });
+  const HomeSearchBar({this.onTap, super.key});
 
   final VoidCallback? onTap;
 

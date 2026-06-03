@@ -60,9 +60,7 @@ class NearbyShopCard extends StatelessWidget {
                   children: [
                     // Placeholder for actual NetworkImage
                     Container(
-                      decoration: const BoxDecoration(
-                        color: AppColors.teal900,
-                      ),
+                      decoration: const BoxDecoration(color: AppColors.teal900),
                       child: Icon(
                         Icons.storefront_rounded,
                         color: Colors.white.withValues(alpha: 0.2),
@@ -153,8 +151,12 @@ class NearbyShopCard extends StatelessWidget {
                           isOpen ? 'Buka' : 'Tutup',
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: isOpen
-                                ? (isDark ? AppColors.successDark : AppColors.success)
-                                : (isDark ? AppColors.errorDark : AppColors.error),
+                                ? (isDark
+                                      ? AppColors.successDark
+                                      : AppColors.success)
+                                : (isDark
+                                      ? AppColors.errorDark
+                                      : AppColors.error),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -173,7 +175,9 @@ class NearbyShopCard extends StatelessWidget {
                           child: Text(
                             'Print & Jilid',
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: isDark ? AppColors.teal300 : AppColors.teal700,
+                              color: isDark
+                                  ? AppColors.teal300
+                                  : AppColors.teal700,
                             ),
                           ),
                         ),

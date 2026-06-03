@@ -9,7 +9,12 @@ import '../features/main/presentation/main_layout.dart';
 import '../features/notifications/presentation/screens/notification_screen.dart';
 import '../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../features/orders/presentation/screens/order_list_screen.dart';
+import '../features/profile/presentation/screens/add_address_screen.dart';
+import '../features/profile/presentation/screens/address_list_screen.dart';
+import '../features/profile/presentation/screens/change_password_screen.dart';
+import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/profile_screen.dart';
+import '../features/profile/presentation/screens/settings_screen.dart';
 import '../features/splash/presentation/screens/splash_screen.dart';
 import '../features/templates/presentation/screens/template_list_screen.dart';
 
@@ -22,10 +27,7 @@ final GoRouter appRouter = GoRouter(
   debugLogDiagnostics: true,
   routes: [
     // ─── Pre-auth routes ─────────────────────────────────────────
-    GoRoute(
-      path: '/splash',
-      builder: (context, state) => const SplashScreen(),
-    ),
+    GoRoute(path: '/splash', builder: (context, state) => const SplashScreen()),
     GoRoute(
       path: '/onboarding',
       builder: (context, state) => const OnboardingScreen(),
@@ -97,6 +99,30 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: '/profile',
               builder: (context, state) => const ProfileScreen(),
+              routes: [
+                GoRoute(
+                  path: 'edit',
+                  builder: (context, state) => const EditProfileScreen(),
+                ),
+                GoRoute(
+                  path: 'addresses',
+                  builder: (context, state) => const AddressListScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'add',
+                      builder: (context, state) => const AddAddressScreen(),
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'change-password',
+                  builder: (context, state) => const ChangePasswordScreen(),
+                ),
+                GoRoute(
+                  path: 'settings',
+                  builder: (context, state) => const SettingsScreen(),
+                ),
+              ],
             ),
           ],
         ),

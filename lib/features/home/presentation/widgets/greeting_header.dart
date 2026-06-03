@@ -58,10 +58,7 @@ class GreetingHeader extends StatelessWidget {
 }
 
 class _NotificationIcon extends StatelessWidget {
-  const _NotificationIcon({
-    required this.unreadCount,
-    this.onTap,
-  });
+  const _NotificationIcon({required this.unreadCount, this.onTap});
 
   final int unreadCount;
   final VoidCallback? onTap;
@@ -75,9 +72,7 @@ class _NotificationIcon extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.15),
             shape: BoxShape.circle,
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.2),
-            ),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
           ),
           child: Material(
             color: Colors.transparent,
@@ -105,10 +100,7 @@ class _NotificationIcon extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.error,
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.teal700,
-                  width: 2,
-                ),
+                border: Border.all(color: AppColors.teal700, width: 2),
               ),
               child: Text(
                 unreadCount > 9 ? '9+' : unreadCount.toString(),

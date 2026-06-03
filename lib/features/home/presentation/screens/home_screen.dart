@@ -25,7 +25,8 @@ class HomeScreen extends StatelessWidget {
           // ─── App Bar & Header ─────────────────────────────────────
           SliverAppBar(
             expandedHeight: 140,
-            toolbarHeight: 0, // Menghilangkan area kosong di atas search bar saat di-scroll
+            toolbarHeight:
+                0, // Menghilangkan area kosong di atas search bar saat di-scroll
             floating: false,
             pinned: true,
             elevation: 0,
@@ -58,44 +59,36 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Padding kompensasi untuk search bar yang floating
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 36),
-          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 36)),
 
           // ─── Main Content (SliverList) ────────────────────────────
           SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                const ActiveOrderBanner(
-                  orderNumber: '#GP-1092',
-                  shopName: 'Fotokopi Surya Gemilang',
-                  statusText: 'Diproses',
-                  estimateText: 'Selesai pukul 14:30',
-                ),
-                const SizedBox(height: 12),
-                const PromoBanner(),
-                const SizedBox(height: 12),
-                const ServiceCategoryGrid(),
-                SectionHeader(
-                  title: 'Toko Terdekat',
-                  onSeeAll: () {},
-                ),
-                const NearbyShopList(),
-                const SizedBox(height: 12),
-                SectionHeader(
-                  title: 'Template Populer',
-                  onSeeAll: () => context.go('/templates'),
-                ),
-                const TemplateRecommendGrid(),
-                const SizedBox(height: 40),
-              ],
-            ),
+            delegate: SliverChildListDelegate([
+              const ActiveOrderBanner(
+                orderNumber: '#GP-1092',
+                shopName: 'Fotokopi Surya Gemilang',
+                statusText: 'Diproses',
+                estimateText: 'Selesai pukul 14:30',
+              ),
+              const SizedBox(height: 12),
+              const PromoBanner(),
+              const SizedBox(height: 12),
+              const ServiceCategoryGrid(),
+              SectionHeader(title: 'Toko Terdekat', onSeeAll: () {}),
+              const NearbyShopList(),
+              const SizedBox(height: 12),
+              SectionHeader(
+                title: 'Template Populer',
+                onSeeAll: () => context.go('/templates'),
+              ),
+              const TemplateRecommendGrid(),
+              const SizedBox(height: 40),
+            ]),
           ),
         ],
       ),
     );
   }
 }
-

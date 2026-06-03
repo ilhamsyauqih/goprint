@@ -4,11 +4,7 @@ import '../../core/constants/app_colors.dart';
 
 /// Header seksi dengan judul dan opsional tombol "Lihat Semua".
 class SectionHeader extends StatelessWidget {
-  const SectionHeader({
-    required this.title,
-    this.onSeeAll,
-    super.key,
-  });
+  const SectionHeader({required this.title, this.onSeeAll, super.key});
 
   final String title;
   final VoidCallback? onSeeAll;
@@ -22,9 +18,9 @@ class SectionHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
           ),
           if (onSeeAll != null)
             InkWell(

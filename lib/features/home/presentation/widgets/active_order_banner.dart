@@ -24,8 +24,9 @@ class ActiveOrderBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
-    final effectiveStatusColor = statusColor ?? (isDark ? AppColors.warningDark : AppColors.warning);
+
+    final effectiveStatusColor =
+        statusColor ?? (isDark ? AppColors.warningDark : AppColors.warning);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -83,7 +84,9 @@ class ActiveOrderBanner extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: effectiveStatusColor.withValues(alpha: 0.15),
+                              color: effectiveStatusColor.withValues(
+                                alpha: 0.15,
+                              ),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
@@ -97,7 +100,9 @@ class ActiveOrderBanner extends StatelessWidget {
                           Text(
                             orderNumber,
                             style: theme.textTheme.labelMedium?.copyWith(
-                              color: isDark ? AppColors.darkMutedText : AppColors.lightSubtleText,
+                              color: isDark
+                                  ? AppColors.darkMutedText
+                                  : AppColors.lightSubtleText,
                             ),
                           ),
                         ],
