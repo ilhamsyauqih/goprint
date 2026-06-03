@@ -37,13 +37,13 @@
 
 ### A3 · Profil Pengguna
 
-- [ ] Buat `ProfileScreen` — tampil nama, foto, email, nomor HP
-- [ ] Buat `EditProfileScreen` — form edit nama, nomor HP, alamat kos
-- [ ] Komponen: `AvatarPicker` — pilih foto dari kamera/galeri
-- [ ] Buat `AddressListScreen` — daftar alamat tersimpan (tambah, hapus, pilih default)
-- [ ] Buat `AddAddressScreen` — form input alamat baru
-- [ ] Buat `ChangePasswordScreen` — input password lama + baru + konfirmasi
-- [ ] Buat `SettingsScreen` — pengaturan notifikasi, toggle tema, tentang app, logout
+- [x] Buat `ProfileScreen` — tampil nama, foto, email, nomor HP
+- [x] Buat `EditProfileScreen` — form edit nama, nomor HP, alamat kos
+- [x] Komponen: `AvatarPicker` — pilih foto dari kamera/galeri
+- [x] Buat `AddressListScreen` — daftar alamat tersimpan (tambah, hapus, pilih default)
+- [x] Buat `AddAddressScreen` — form input alamat baru
+- [x] Buat `ChangePasswordScreen` — input password lama + baru + konfirmasi
+- [x] Buat `SettingsScreen` — pengaturan notifikasi, toggle tema, tentang app, logout
 
 ### A4 · Notifikasi
 

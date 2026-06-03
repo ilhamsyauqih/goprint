@@ -33,9 +33,9 @@ class AdminDashboardScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               'Dashboard Admin',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             Text(

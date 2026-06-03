@@ -14,11 +14,31 @@ class CustomBottomNavBar extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   static const List<_NavItem> _items = [
-    _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home'),
-    _NavItem(icon: Icons.receipt_long_outlined, activeIcon: Icons.receipt_long_rounded, label: 'Pesanan'),
-    _NavItem(icon: Icons.description_outlined, activeIcon: Icons.description_rounded, label: 'Template'),
-    _NavItem(icon: Icons.notifications_outlined, activeIcon: Icons.notifications_rounded, label: 'Notifikasi'),
-    _NavItem(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'Profil'),
+    _NavItem(
+      icon: Icons.home_outlined,
+      activeIcon: Icons.home_rounded,
+      label: 'Home',
+    ),
+    _NavItem(
+      icon: Icons.receipt_long_outlined,
+      activeIcon: Icons.receipt_long_rounded,
+      label: 'Pesanan',
+    ),
+    _NavItem(
+      icon: Icons.description_outlined,
+      activeIcon: Icons.description_rounded,
+      label: 'Template',
+    ),
+    _NavItem(
+      icon: Icons.notifications_outlined,
+      activeIcon: Icons.notifications_rounded,
+      label: 'Notifikasi',
+    ),
+    _NavItem(
+      icon: Icons.person_outline_rounded,
+      activeIcon: Icons.person_rounded,
+      label: 'Profil',
+    ),
   ];
 
   @override

@@ -78,12 +78,16 @@ class TemplateRecommendGrid extends StatelessWidget {
                       child: Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: isDark ? AppColors.darkElevated : AppColors.lightSurface,
+                          color: isDark
+                              ? AppColors.darkElevated
+                              : AppColors.lightSurface,
                         ),
                         child: Icon(
                           Icons.description_outlined,
                           size: 40,
-                          color: isDark ? AppColors.darkMutedText : AppColors.lightSubtleText,
+                          color: isDark
+                              ? AppColors.darkMutedText
+                              : AppColors.lightSubtleText,
                         ),
                       ),
                     ),
@@ -96,18 +100,20 @@ class TemplateRecommendGrid extends StatelessWidget {
                           children: [
                             Text(
                               tpl['category'],
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                color: AppColors.teal700,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(
+                                    color: AppColors.teal700,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               tpl['title'],
-                              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                height: 1.2,
-                              ),
+                              style: Theme.of(context).textTheme.labelMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    height: 1.2,
+                                  ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),

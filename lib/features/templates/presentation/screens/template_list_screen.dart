@@ -12,10 +12,7 @@ class TemplateListScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'Template',
-        showBackButton: false,
-      ),
+      appBar: const CustomAppBar(title: 'Template', showBackButton: false),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -28,9 +25,9 @@ class TemplateListScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               'Template Dokumen',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             Text(

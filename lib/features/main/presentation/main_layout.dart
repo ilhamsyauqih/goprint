@@ -8,10 +8,7 @@ import '../../../shared/widgets/custom_bottom_nav_bar.dart';
 /// Menggunakan [StatefulNavigationShell] dari go_router untuk mempertahankan
 /// state setiap tab (IndexedStack behavior).
 class MainLayout extends StatelessWidget {
-  const MainLayout({
-    required this.navigationShell,
-    super.key,
-  });
+  const MainLayout({required this.navigationShell, super.key});
 
   final StatefulNavigationShell navigationShell;
 

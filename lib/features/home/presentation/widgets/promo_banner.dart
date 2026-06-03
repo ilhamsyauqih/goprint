@@ -115,9 +115,7 @@ class _PromoBannerState extends State<PromoBanner> {
                             const SizedBox(height: 12),
                             Text(
                               promo['title'],
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge
+                              style: Theme.of(context).textTheme.titleLarge
                                   ?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w800,
@@ -127,9 +125,7 @@ class _PromoBannerState extends State<PromoBanner> {
                             const SizedBox(height: 4),
                             Text(
                               promo['subtitle'],
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
+                              style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(
                                     color: Colors.white.withValues(alpha: 0.9),
                                   ),
@@ -147,24 +143,21 @@ class _PromoBannerState extends State<PromoBanner> {
         const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            _promos.length,
-            (index) {
-              final isActive = index == _currentIndex;
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                width: isActive ? 24 : 8,
-                height: 8,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  color: isActive
-                      ? AppColors.teal700
-                      : AppColors.teal700.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              );
-            },
-          ),
+          children: List.generate(_promos.length, (index) {
+            final isActive = index == _currentIndex;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              width: isActive ? 24 : 8,
+              height: 8,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                color: isActive
+                    ? AppColors.teal700
+                    : AppColors.teal700.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            );
+          }),
         ),
       ],
     );
