@@ -37,6 +37,66 @@ void main() {
 
     await tester.tap(find.text('Mulai Sekarang'));
     await tester.pumpAndSettle();
-    expect(find.byType(GetStartedScreen), findsOneWidget);
+    expect(find.byType(LoginScreen), findsOneWidget);
+  });
+
+  testWidgets('login validates email and password before submit', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+
+    await tester.tap(find.text('Login'));
+    await tester.pump();
+
+    expect(find.text('Field ini wajib diisi'), findsNWidgets(2));
+
+    await tester.enterText(find.byType(TextFormField).at(0), 'salah');
+    await tester.enterText(find.byType(TextFormField).at(1), 'pendek');
+    await tester.tap(find.text('Login'));
+    await tester.pump();
+
+    expect(find.text('Format email tidak valid'), findsOneWidget);
+    expect(find.text('Password minimal 8 karakter'), findsOneWidget);
+  });
+
+  testWidgets('login shows loading while processing valid credentials', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+
+    await tester.enterText(find.byType(TextFormField).at(0), 'amir@goprint.id');
+    await tester.enterText(find.byType(TextFormField).at(1), 'password123');
+    await tester.tap(find.text('Login'));
+    await tester.pump();
+
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    await tester.pump(const Duration(milliseconds: 850));
+    await tester.pumpAndSettle();
+    expect(find.text('Login berhasil diproses'), findsOneWidget);
+  });
+
+  testWidgets('auth links open register and forgot password screens', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+
+    await tester.ensureVisible(find.text('Daftar'));
+    await tester.tap(find.text('Daftar'));
+    await tester.pumpAndSettle();
+    expect(find.byType(RegisterScreen), findsOneWidget);
+    expect(find.text('Nama Lengkap'), findsOneWidget);
+    expect(find.text('Nomor HP'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Login'));
+    await tester.tap(find.text('Login'));
+    await tester.pumpAndSettle();
+    expect(find.byType(LoginScreen), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Lupa password?'));
+    await tester.tap(find.text('Lupa password?'));
+    await tester.pumpAndSettle();
+    expect(find.byType(ForgotPasswordScreen), findsOneWidget);
+    expect(find.text('Kirim Reset Link'), findsOneWidget);
   });
 }

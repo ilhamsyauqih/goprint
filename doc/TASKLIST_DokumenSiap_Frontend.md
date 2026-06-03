@@ -27,13 +27,13 @@
 
 ### A2 · Autentikasi (Login & Register)
 
-- [ ] Buat `LoginScreen` — form email + password, tombol login, link ke register
-- [ ] Buat `RegisterScreen` — form nama, email, password, nomor HP
-- [ ] Buat `ForgotPasswordScreen` — input email, kirim reset link
-- [ ] Komponen: `AuthTextField` (custom input field sesuai design system)
-- [ ] Komponen: `PrimaryButton` (gradient teal, radius 12dp)
-- [ ] Handling state: loading indicator saat proses login/register
-- [ ] Validasi form: email format, password min 8 karakter, field wajib
+- [x] Buat `LoginScreen` — form email + password, tombol login, link ke register
+- [x] Buat `RegisterScreen` — form nama, email, password, nomor HP
+- [x] Buat `ForgotPasswordScreen` — input email, kirim reset link
+- [x] Komponen: `AuthTextField` (custom input field sesuai design system)
+- [x] Komponen: `PrimaryButton` (gradient teal, radius 12dp)
+- [x] Handling state: loading indicator saat proses login/register
+- [x] Validasi form: email format, password min 8 karakter, field wajib
 
 ### A3 · Profil Pengguna
 
