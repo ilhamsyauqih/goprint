@@ -59,11 +59,11 @@
 
 ### I1 · Layout Utama & Navigasi
 
-- [ ] Buat `MainLayout` — Bottom Navigation Bar 5 tab (Home, Pesanan, Template, Notifikasi, Profil)
-- [ ] Komponen: `CustomBottomNavBar` — ikon + label, aksen teal saat aktif
-- [ ] Setup `go_router` — definisi semua route user & admin
-- [ ] Buat `CustomAppBar` — gradasi teal, judul putih, back button
-- [ ] Implementasi Light Mode & Dark Mode (ThemeData + color scheme)
+- [x] Buat `MainLayout` — Bottom Navigation Bar 5 tab (Home, Pesanan, Template, Notifikasi, Profil)
+- [x] Komponen: `CustomBottomNavBar` — ikon + label, aksen teal saat aktif
+- [x] Setup `go_router` — definisi semua route user & admin
+- [x] Buat `CustomAppBar` — gradasi teal, judul putih, back button
+- [x] Implementasi Light Mode & Dark Mode (ThemeData + color scheme)
 
 ### I2 · Home Screen
 
