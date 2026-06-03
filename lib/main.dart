@@ -36,6 +36,8 @@ class AppColors {
   static const teal900 = Color(0xFF004D40);
   static const lightBackground = Color(0xFFFAFAFA);
   static const lightCard = Color(0xFFFFFFFF);
+  static const lightBorder = Color(0xFFE0E0E0);
+  static const error = Color(0xFFC62828);
   static const grey500 = Color(0xFF9E9E9E);
   static const grey900 = Color(0xFF212121);
 }
@@ -234,7 +236,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _start() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => const GetStartedScreen()),
+      MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
     );
   }
 
@@ -268,7 +270,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(height: 16),
               DotIndicator(length: _slides.length, activeIndex: _currentPage),
               const SizedBox(height: 28),
-              GradientButton(
+              PrimaryButton(
                 label: _isLastPage ? 'Mulai Sekarang' : 'Next',
                 onPressed: _next,
               ),
@@ -372,15 +374,17 @@ class DotIndicator extends StatelessWidget {
   }
 }
 
-class GradientButton extends StatelessWidget {
-  const GradientButton({
+class PrimaryButton extends StatelessWidget {
+  const PrimaryButton({
     required this.label,
     required this.onPressed,
+    this.isLoading = false,
     super.key,
   });
 
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -402,19 +406,34 @@ class GradientButton extends StatelessWidget {
         width: double.infinity,
         height: 54,
         child: TextButton(
-          onPressed: onPressed,
+          onPressed: isLoading ? null : onPressed,
           style: TextButton.styleFrom(
             foregroundColor: Colors.white,
+            disabledForegroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: Text(
-            label,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-            ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 180),
+            child: isLoading
+                ? const SizedBox(
+                    key: ValueKey('primary-button-loading'),
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.6,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(
+                    label,
+                    key: ValueKey(label),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
           ),
         ),
       ),
@@ -728,46 +747,493 @@ class _DeliveryBox extends StatelessWidget {
   }
 }
 
-class GetStartedScreen extends StatelessWidget {
-  const GetStartedScreen({super.key});
+class AuthTextField extends StatelessWidget {
+  const AuthTextField({
+    required this.controller,
+    required this.label,
+    required this.hintText,
+    required this.prefixIcon,
+    this.keyboardType,
+    this.textInputAction,
+    this.obscureText = false,
+    this.validator,
+    super.key,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final String hintText;
+  final IconData prefixIcon;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
+  final bool obscureText;
+  final String? Function(String?)? validator;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      obscureText: obscureText,
+      validator: validator,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hintText,
+        prefixIcon: Icon(prefixIcon, color: AppColors.teal700),
+        filled: true,
+        fillColor: AppColors.lightCard,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.lightBorder, width: 1.4),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.teal700, width: 2),
+        ),
+        errorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.error, width: 1.6),
+        ),
+        focusedErrorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.error, width: 2),
+        ),
+      ),
+    );
+  }
+}
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    await Future<void>.delayed(const Duration(milliseconds: 850));
+    if (!mounted) {
+      return;
+    }
+
+    setState(() => _isLoading = false);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Login berhasil diproses')));
+  }
+
+  void _openRegister() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const RegisterScreen()));
+  }
+
+  void _openForgotPassword() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const ForgotPasswordScreen()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AuthScaffold(
+      title: 'Masuk ke GoPrint',
+      subtitle: 'Kelola pesanan print kampusmu dengan cepat dan transparan.',
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AuthTextField(
+              controller: _emailController,
+              label: 'Email',
+              hintText: 'nama@email.com',
+              prefixIcon: Icons.mail_outline_rounded,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              validator: AuthValidators.email,
+            ),
+            const SizedBox(height: 18),
+            AuthTextField(
+              controller: _passwordController,
+              label: 'Password',
+              hintText: 'Minimal 8 karakter',
+              prefixIcon: Icons.lock_outline_rounded,
+              obscureText: true,
+              textInputAction: TextInputAction.done,
+              validator: AuthValidators.password,
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: _isLoading ? null : _openForgotPassword,
+                child: const Text('Lupa password?'),
+              ),
+            ),
+            const SizedBox(height: 8),
+            PrimaryButton(
+              label: 'Login',
+              onPressed: _submit,
+              isLoading: _isLoading,
+            ),
+            const SizedBox(height: 20),
+            AuthSwitchPrompt(
+              text: 'Belum punya akun?',
+              actionText: 'Daftar',
+              onPressed: _isLoading ? null : _openRegister,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _phoneController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    await Future<void>.delayed(const Duration(milliseconds: 850));
+    if (!mounted) {
+      return;
+    }
+
+    setState(() => _isLoading = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Registrasi berhasil diproses')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AuthScaffold(
+      title: 'Buat Akun',
+      subtitle: 'Daftar untuk upload file, cek harga, dan pesan pengantaran.',
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AuthTextField(
+              controller: _nameController,
+              label: 'Nama Lengkap',
+              hintText: 'Nama kamu',
+              prefixIcon: Icons.person_outline_rounded,
+              textInputAction: TextInputAction.next,
+              validator: AuthValidators.requiredField,
+            ),
+            const SizedBox(height: 18),
+            AuthTextField(
+              controller: _emailController,
+              label: 'Email',
+              hintText: 'nama@email.com',
+              prefixIcon: Icons.mail_outline_rounded,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              validator: AuthValidators.email,
+            ),
+            const SizedBox(height: 18),
+            AuthTextField(
+              controller: _passwordController,
+              label: 'Password',
+              hintText: 'Minimal 8 karakter',
+              prefixIcon: Icons.lock_outline_rounded,
+              obscureText: true,
+              textInputAction: TextInputAction.next,
+              validator: AuthValidators.password,
+            ),
+            const SizedBox(height: 18),
+            AuthTextField(
+              controller: _phoneController,
+              label: 'Nomor HP',
+              hintText: '08xxxxxxxxxx',
+              prefixIcon: Icons.phone_android_rounded,
+              keyboardType: TextInputType.phone,
+              textInputAction: TextInputAction.done,
+              validator: AuthValidators.requiredField,
+            ),
+            const SizedBox(height: 28),
+            PrimaryButton(
+              label: 'Register',
+              onPressed: _submit,
+              isLoading: _isLoading,
+            ),
+            const SizedBox(height: 20),
+            AuthSwitchPrompt(
+              text: 'Sudah punya akun?',
+              actionText: 'Login',
+              onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
+
+  @override
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
+
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    await Future<void>.delayed(const Duration(milliseconds: 850));
+    if (!mounted) {
+      return;
+    }
+
+    setState(() => _isLoading = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Link reset password sudah dikirim')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AuthScaffold(
+      title: 'Reset Password',
+      subtitle: 'Masukkan email akunmu untuk menerima link reset password.',
+      showBackButton: true,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AuthTextField(
+              controller: _emailController,
+              label: 'Email',
+              hintText: 'nama@email.com',
+              prefixIcon: Icons.mail_outline_rounded,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.done,
+              validator: AuthValidators.email,
+            ),
+            const SizedBox(height: 28),
+            PrimaryButton(
+              label: 'Kirim Reset Link',
+              onPressed: _submit,
+              isLoading: _isLoading,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AuthScaffold extends StatelessWidget {
+  const AuthScaffold({
+    required this.title,
+    required this.subtitle,
+    required this.child,
+    this.showBackButton = false,
+    super.key,
+  });
+
+  final String title;
+  final String subtitle;
+  final Widget child;
+  final bool showBackButton;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.print_rounded,
-                  size: 72,
-                  color: AppColors.teal700,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 18, 24, 28),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 48,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: showBackButton
+                      ? IconButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.arrow_back_rounded),
+                        )
+                      : const SizedBox.shrink(),
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  'Siap mulai dengan GoPrint',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.grey900,
+              ),
+              const SizedBox(height: 8),
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppColors.teal600, AppColors.teal900],
                   ),
+                  borderRadius: BorderRadius.circular(18),
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  'Halaman berikutnya akan terhubung ke autentikasi pada task A2.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(color: AppColors.grey500),
+                child: const Icon(
+                  Icons.print_rounded,
+                  color: Colors.white,
+                  size: 40,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 28),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: AppColors.grey900,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: AppColors.grey500,
+                  height: 1.45,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 34),
+              child,
+            ],
           ),
         ),
       ),
     );
+  }
+}
+
+class AuthSwitchPrompt extends StatelessWidget {
+  const AuthSwitchPrompt({
+    required this.text,
+    required this.actionText,
+    required this.onPressed,
+    super.key,
+  });
+
+  final String text;
+  final String actionText;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Flexible(
+          child: Text(
+            text,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.grey500,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: onPressed,
+          child: Text(
+            actionText,
+            style: const TextStyle(fontWeight: FontWeight.w800),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AuthValidators {
+  static final RegExp _emailPattern = RegExp(
+    r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',
+  );
+
+  static String? requiredField(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Field ini wajib diisi';
+    }
+    return null;
+  }
+
+  static String? email(String? value) {
+    final requiredError = requiredField(value);
+    if (requiredError != null) {
+      return requiredError;
+    }
+
+    if (!_emailPattern.hasMatch(value!.trim())) {
+      return 'Format email tidak valid';
+    }
+    return null;
+  }
+
+  static String? password(String? value) {
+    final requiredError = requiredField(value);
+    if (requiredError != null) {
+      return requiredError;
+    }
+
+    if (value!.length < 8) {
+      return 'Password minimal 8 karakter';
+    }
+    return null;
   }
 }
