@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 
@@ -36,7 +37,7 @@ class ServiceCategoryGrid extends StatelessWidget {
             name: cat['name'],
             icon: cat['icon'],
             onTap: () {
-              // TODO: Navigate to shop list filtered by service
+              context.push('/shops?category=${cat['name']}');
             },
           );
         },

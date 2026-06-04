@@ -67,23 +67,23 @@
 
 ### I2 · Home Screen
 
-- [ ] Buat `HomeScreen` — layout keseluruhan dengan ScrollView
-- [ ] Komponen: `GreetingHeader` — sapaan nama + ikon notifikasi di App Bar
-- [ ] Komponen: `SearchBar` — input cari toko/layanan
-- [ ] Komponen: `PromoBanner` — horizontal scroll banner promo (PageView + dots)
-- [ ] Komponen: `ServiceCategoryGrid` — grid 2×3 ikon layanan (Print, Jilid, Laminating, Scan, Fotokopi, Template)
-- [ ] Komponen: `NearbyShopCard` — kartu toko (nama, rating bintang, jarak, badge buka/tutup)
-- [ ] Komponen: `NearbyShopList` — horizontal scroll daftar toko terdekat
-- [ ] Komponen: `ActiveOrderBanner` — card pesanan aktif (tampil jika ada pesanan berjalan)
-- [ ] Komponen: `TemplateRecommendGrid` — grid template populer
+- [x] Buat `HomeScreen` — layout keseluruhan dengan ScrollView
+- [x] Komponen: `GreetingHeader` — sapaan nama + ikon notifikasi di App Bar
+- [x] Komponen: `SearchBar` — input cari toko/layanan
+- [x] Komponen: `PromoBanner` — horizontal scroll banner promo (PageView + dots)
+- [x] Komponen: `ServiceCategoryGrid` — grid 2×3 ikon layanan (Print, Jilid, Laminating, Scan, Fotokopi, Template)
+- [x] Komponen: `NearbyShopCard` — kartu toko (nama, rating bintang, jarak, badge buka/tutup)
+- [x] Komponen: `NearbyShopList` — horizontal scroll daftar toko terdekat
+- [x] Komponen: `ActiveOrderBanner` — card pesanan aktif (tampil jika ada pesanan berjalan)
+- [x] Komponen: `TemplateRecommendGrid` — grid template populer
 
 ### I3 · Daftar & Detail Toko
 
-- [ ] Buat `ShopListScreen` — daftar toko dengan filter (layanan, rating, jarak)
-- [ ] Buat `ShopDetailScreen` — foto toko, rating, jam operasional, daftar layanan, ulasan
-- [ ] Komponen: `ShopInfoHeader` — header bergambar + gradient overlay + nama toko
-- [ ] Komponen: `ServiceMenuCard` — kartu layanan (nama, harga mulai dari, estimasi waktu)
-- [ ] Komponen: `OperatingHoursWidget` — tampil jam buka per hari
+- [x] Buat `ShopListScreen` — daftar toko dengan filter (layanan, rating, jarak)
+- [x] Buat `ShopDetailScreen` — foto toko, rating, jam operasional, daftar layanan, ulasan
+- [x] Komponen: `ShopInfoHeader` — header bergambar + gradient overlay + nama toko
+- [x] Komponen: `ServiceMenuCard` — kartu layanan (nama, harga mulai dari, estimasi waktu)
+- [x] Komponen: `OperatingHoursWidget` — tampil jam buka per hari
 
 ### I4 · Order Flow — Langkah 1 s.d. 3
 

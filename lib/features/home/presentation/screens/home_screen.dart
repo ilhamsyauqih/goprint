@@ -55,7 +55,9 @@ class HomeScreen extends StatelessWidget {
               preferredSize: const Size.fromHeight(28),
               child: Transform.translate(
                 offset: const Offset(0, 24),
-                child: const HomeSearchBar(),
+                child: HomeSearchBar(
+                  onTap: () => context.push('/shops'),
+                ),
               ),
             ),
           ),
@@ -76,7 +78,10 @@ class HomeScreen extends StatelessWidget {
               const PromoBanner(),
               const SizedBox(height: 12),
               const ServiceCategoryGrid(),
-              SectionHeader(title: 'Toko Terdekat', onSeeAll: () {}),
+              SectionHeader(
+                title: 'Toko Terdekat',
+                onSeeAll: () => context.push('/shops'),
+              ),
               const NearbyShopList(),
               const SizedBox(height: 12),
               SectionHeader(
