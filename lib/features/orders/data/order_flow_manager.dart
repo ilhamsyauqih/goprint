@@ -1,4 +1,6 @@
 import '../../shop/data/mock_shops.dart';
+import 'order_model.dart';
+
 
 /// Model data berkas yang diunggah oleh pengguna beserta konfigurasi cetaknya.
 class UploadedFile {
@@ -63,6 +65,172 @@ class OrderFlowManager {
 
   // Singleton instance
   static final OrderFlowManager instance = OrderFlowManager._();
+
+  // List of orders (mock data initialized)
+  final List<OrderModel> orders = [
+    OrderModel(
+      orderNumber: 'GP-1092',
+      shop: MockShops.shops[0], // Surya Gemilang
+      uploadedFiles: [
+        UploadedFile(
+          id: 'mock_1',
+          name: 'Skripsi_Final_v2.pdf',
+          size: '4.2 MB',
+          pageCount: 120,
+          copies: 1,
+          colorMode: 'Hitam Putih',
+          paperSize: 'A4',
+          paperType: 'HVS 70g',
+          doubleSide: false,
+          finishing: 'Jilid Lakban Biasa',
+        ),
+      ],
+      deliveryType: 'pickup',
+      deliveryFee: 0,
+      paymentMethod: 'Transfer',
+      paymentProofPath: 'assets/images/proof_mock.png',
+      paymentStatus: 'Terverifikasi',
+      status: OrderStatus.processing,
+      date: DateTime.now().subtract(const Duration(hours: 3)),
+      totalFee: 65000,
+    ),
+    OrderModel(
+      orderNumber: 'GP-2045',
+      shop: MockShops.shops[1], // Prima Print Center
+      uploadedFiles: [
+        UploadedFile(
+          id: 'mock_2',
+          name: 'Poster_Tugas_Desain.pdf',
+          size: '12.5 MB',
+          pageCount: 1,
+          copies: 3,
+          colorMode: 'Warna',
+          paperSize: 'A3',
+          paperType: 'Art Paper',
+          doubleSide: false,
+          finishing: 'Tanpa Jilid',
+        ),
+      ],
+      deliveryType: 'delivery',
+      deliveryAddress: 'Kost Orange, Gang Sunan Giri No. 5, Sleman',
+      deliveryFee: 8000,
+      paymentMethod: 'QRIS',
+      paymentProofPath: null,
+      paymentStatus: 'Menunggu Verifikasi',
+      status: OrderStatus.pending,
+      date: DateTime.now().subtract(const Duration(minutes: 45)),
+      totalFee: 15500,
+    ),
+    OrderModel(
+      orderNumber: 'GP-3081',
+      shop: MockShops.shops[0], // Surya Gemilang
+      uploadedFiles: [
+        UploadedFile(
+          id: 'mock_3',
+          name: 'Laporan_Bulanan_KM.pdf',
+          size: '1.8 MB',
+          pageCount: 10,
+          copies: 1,
+          colorMode: 'Warna',
+          paperSize: 'A4',
+          paperType: 'HVS 80g',
+          doubleSide: true,
+          finishing: 'Jilid Spiral Kawat',
+        ),
+      ],
+      deliveryType: 'pickup',
+      deliveryFee: 0,
+      paymentMethod: 'QRIS',
+      paymentProofPath: 'assets/images/qris_proof.png',
+      paymentStatus: 'Terverifikasi',
+      status: OrderStatus.ready,
+      date: DateTime.now().subtract(const Duration(hours: 5)),
+      totalFee: 32000,
+    ),
+    OrderModel(
+      orderNumber: 'GP-0981',
+      shop: MockShops.shops[2], // Jaya Abadi Fotokopi
+      uploadedFiles: [
+        UploadedFile(
+          id: 'mock_4',
+          name: 'Formulir_Pendaftaran.pdf',
+          size: '450 KB',
+          pageCount: 2,
+          copies: 5,
+          colorMode: 'Hitam Putih',
+          paperSize: 'A4',
+          paperType: 'HVS 70g',
+          doubleSide: false,
+          finishing: 'Tanpa Jilid',
+        ),
+      ],
+      deliveryType: 'pickup',
+      deliveryFee: 0,
+      paymentMethod: 'Tunai',
+      paymentProofPath: null,
+      paymentStatus: 'Terverifikasi',
+      status: OrderStatus.completed,
+      date: DateTime.now().subtract(const Duration(days: 3)),
+      totalFee: 4000,
+    ),
+    OrderModel(
+      orderNumber: 'GP-0872',
+      shop: MockShops.shops[1], // Prima Print Center
+      uploadedFiles: [
+        UploadedFile(
+          id: 'mock_5',
+          name: 'Modul_Kuliah_Lengkap.pdf',
+          size: '15.4 MB',
+          pageCount: 150,
+          copies: 2,
+          colorMode: 'Hitam Putih',
+          paperSize: 'A4',
+          paperType: 'HVS 70g',
+          doubleSide: true,
+          finishing: 'Jilid Spiral Kawat',
+        ),
+      ],
+      deliveryType: 'pickup',
+      deliveryFee: 0,
+      paymentMethod: 'QRIS',
+      paymentProofPath: null,
+      paymentStatus: 'Dibatalkan',
+      status: OrderStatus.cancelled,
+      date: DateTime.now().subtract(const Duration(days: 5)),
+      totalFee: 180000,
+    ),
+  ];
+
+  /// Menyimpan pesanan saat ini ke dalam daftar pesanan
+  void saveCurrentOrder() {
+    final generatedNumber = orderNumber ?? "GP-${DateTime.now().millisecondsSinceEpoch % 10000}";
+    final order = OrderModel(
+      orderNumber: generatedNumber,
+      shop: selectedShop ?? MockShops.shops[0],
+      uploadedFiles: List.from(uploadedFiles),
+      deliveryType: deliveryType,
+      deliveryAddress: deliveryAddress,
+      deliveryFee: deliveryFee,
+      paymentMethod: paymentMethod ?? 'QRIS',
+      paymentProofPath: paymentProofPath,
+      paymentStatus: paymentMethod == 'Transfer' ? 'Menunggu Verifikasi' : 'Terverifikasi',
+      status: OrderStatus.pending,
+      date: DateTime.now(),
+      totalFee: totalFee,
+    );
+    orders.insert(0, order);
+  }
+
+  /// Membatalkan pesanan berdasarkan nomor pesanan
+  void cancelOrder(String orderNo) {
+    final index = orders.indexWhere((o) => o.orderNumber == orderNo);
+    if (index != -1) {
+      orders[index] = orders[index].copyWith(
+        status: OrderStatus.cancelled,
+        paymentStatus: 'Dibatalkan',
+      );
+    }
+  }
 
   // State pesanan aktif
   Shop? selectedShop;
