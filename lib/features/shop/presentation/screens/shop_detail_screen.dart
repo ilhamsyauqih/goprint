@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../orders/data/order_flow_manager.dart';
 import '../../data/mock_shops.dart';
 import '../widgets/operating_hours_widget.dart';
 import '../widgets/service_menu_card.dart';
@@ -162,14 +164,9 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
             return ServiceMenuCard(
               service: service,
               onTap: () {
-                // TODO: Mulai alur checkout (SelectServiceScreen / Order Flow)
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Layanan "${service.name}" dipilih (Alur pemesanan menyusul)',
-                    ),
-                  ),
-                );
+                OrderFlowManager.instance.selectShop(shop);
+                OrderFlowManager.instance.toggleService(service);
+                context.push('/order/select-service/${shop.id}');
               },
             );
           },

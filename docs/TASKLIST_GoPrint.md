@@ -87,13 +87,13 @@
 
 ### I4 · Order Flow — Langkah 1 s.d. 3
 
-- [ ] Buat `SelectServiceScreen` — pilih layanan dari toko (multi-item)
-- [ ] Buat `UploadFileScreen` — tombol upload file, list file terupload
-- [ ] Komponen: `FileUploadArea` — dashed border teal, ikon upload, drag & drop hint
-- [ ] Komponen: `FileCard` — tampil nama file, ukuran, jumlah halaman, tombol hapus
-- [ ] Buat `FileConfigScreen` — konfigurasi per file (eksemplar, warna, kertas, finishing, double-side)
-- [ ] Komponen: `ConfigOption` — row pilihan dengan label + control (dropdown/toggle/stepper)
-- [ ] Komponen: `PdfPreviewWidget` — preview file PDF dalam aplikasi
+- [x] Buat `SelectServiceScreen` — pilih layanan dari toko (multi-item)
+- [x] Buat `UploadFileScreen` — tombol upload file, list file terupload
+- [x] Komponen: `FileUploadArea` — dashed border teal, ikon upload, drag & drop hint
+- [x] Komponen: `FileCard` — tampil nama file, ukuran, jumlah halaman, tombol hapus
+- [x] Buat `FileConfigScreen` — konfigurasi per file (eksemplar, warna, kertas, finishing, double-side)
+- [x] Komponen: `ConfigOption` — row pilihan dengan label + control (dropdown/toggle/stepper)
+- [x] Komponen: `PdfPreviewWidget` — preview file PDF dalam aplikasi
 
 ### I5 · Order Flow — Langkah 4 s.d. 6
 
