@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 
@@ -46,7 +47,7 @@ class NearbyShopCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () {
-            // TODO: navigate to shop detail
+            context.push('/shop/$id');
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

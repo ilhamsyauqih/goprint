@@ -15,6 +15,8 @@ import '../features/profile/presentation/screens/change_password_screen.dart';
 import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/profile_screen.dart';
 import '../features/profile/presentation/screens/settings_screen.dart';
+import '../features/shop/presentation/screens/shop_detail_screen.dart';
+import '../features/shop/presentation/screens/shop_list_screen.dart';
 import '../features/splash/presentation/screens/splash_screen.dart';
 import '../features/templates/presentation/screens/template_list_screen.dart';
 
@@ -45,6 +47,22 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/auth/forgot-password',
       builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+
+    // ─── Shop routes ─────────────────────────────────────────────
+    GoRoute(
+      path: '/shops',
+      builder: (context, state) {
+        final category = state.uri.queryParameters['category'];
+        return ShopListScreen(preselectedCategory: category);
+      },
+    ),
+    GoRoute(
+      path: '/shop/:id',
+      builder: (context, state) {
+        final shopId = state.pathParameters['id'] ?? '1';
+        return ShopDetailScreen(shopId: shopId);
+      },
     ),
 
     // ─── Main app — Bottom Navigation (User) ────────────────────
