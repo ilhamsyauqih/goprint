@@ -401,33 +401,7 @@ class _FileConfigScreenState extends State<FileConfigScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // Klik selesai/lanjut (Untuk proto, simulasikan sukses)
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            title: const Text('Konfigurasi Disimpan'),
-                            content: const Text(
-                              'Konfigurasi pencetakan berkas Anda telah berhasil disimpan.\n\nLangkah selanjutnya (I5): Kalkulasi Harga & Pembayaran.',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop(); // Tutup dialog
-                                  // Reset sesi & kembali ke home
-                                  _orderFlow.clear();
-                                  context.go('/home');
-                                },
-                                child: const Text('Selesai (Kembali ke Home)'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
+                      context.push('/order/price-calculator');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: isDark ? AppColors.teal300 : AppColors.teal700,

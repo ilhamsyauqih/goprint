@@ -69,6 +69,16 @@ class OrderFlowManager {
   final List<ServiceItem> selectedServices = [];
   final List<UploadedFile> uploadedFiles = [];
 
+  // Delivery & Pickup State
+  String deliveryType = 'pickup'; // 'pickup' | 'delivery'
+  String? deliveryAddress;
+  int deliveryFee = 0;
+
+  // Payment State
+  String? paymentMethod;
+  String? paymentProofPath;
+  String? orderNumber;
+
   /// Menyetel toko terpilih dan mengosongkan pilihan sebelumnya
   void selectShop(Shop shop) {
     if (selectedShop?.id != shop.id) {
@@ -87,11 +97,62 @@ class OrderFlowManager {
     }
   }
 
+  /// Menghitung subtotal untuk satu berkas terunggah berdasarkan konfigurasi
+  int getFileSubtotal(UploadedFile file) {
+    int basePricePerPage = file.colorMode == 'Warna' ? 1500 : 500;
+    int paperTypeFeePerPage = 0;
+    if (file.paperType == 'HVS 80g') {
+      paperTypeFeePerPage = 200;
+    } else if (file.paperType == 'Art Paper') {
+      paperTypeFeePerPage = 1000;
+    }
+
+    int finishingFee = 0;
+    if (file.finishing == 'Jilid Lakban' || file.finishing == 'Jilid Lakban Biasa') {
+      finishingFee = 5000;
+    } else if (file.finishing == 'Jilid Spiral' || file.finishing == 'Jilid Spiral Kawat') {
+      finishingFee = 15000;
+    }
+
+    // Subtotal = ((pages * printPrice) + (pages * paperTypeFee)) * copies + (finishingFee * copies)
+    int pageCost = (file.pageCount * basePricePerPage) + (file.pageCount * paperTypeFeePerPage);
+    int fileSubtotal = (pageCost * file.copies) + (finishingFee * file.copies);
+    return fileSubtotal;
+  }
+
+  /// Menghitung total harga semua berkas
+  int get itemSubtotal {
+    int sum = 0;
+    for (var f in uploadedFiles) {
+      sum += getFileSubtotal(f);
+    }
+    return sum;
+  }
+
+  /// Menghitung total harga keseluruhan termasuk ongkos kirim
+  int get totalFee {
+    return itemSubtotal + (deliveryType == 'delivery' ? deliveryFee : 0);
+  }
+
+  /// Menghasilkan nomor pesanan secara acak dengan format DOC-YYYYMMDD-XXXX
+  void generateOrderNumber() {
+    final now = DateTime.now();
+    final dateStr = "${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}";
+    final randomDigits = (now.millisecondsSinceEpoch % 10000).toString().padLeft(4, '0');
+    orderNumber = "DOC-$dateStr-$randomDigits";
+  }
+
   /// Menghapus semua data sesi pemesanan
   void clear() {
     selectedShop = null;
     selectedServices.clear();
     uploadedFiles.clear();
+    deliveryType = 'pickup';
+    deliveryAddress = null;
+    deliveryFee = 0;
+    paymentMethod = null;
+    paymentProofPath = null;
+    orderNumber = null;
   }
 
   /// Menambahkan berkas tiruan untuk pengujian UI

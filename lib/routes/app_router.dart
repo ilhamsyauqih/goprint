@@ -8,8 +8,13 @@ import '../features/home/presentation/screens/home_screen.dart';
 import '../features/main/presentation/main_layout.dart';
 import '../features/notifications/presentation/screens/notification_screen.dart';
 import '../features/onboarding/presentation/screens/onboarding_screen.dart';
+import '../features/orders/presentation/screens/delivery_pick_screen.dart';
 import '../features/orders/presentation/screens/file_config_screen.dart';
 import '../features/orders/presentation/screens/order_list_screen.dart';
+import '../features/orders/presentation/screens/order_success_screen.dart';
+import '../features/orders/presentation/screens/order_summary_screen.dart';
+import '../features/orders/presentation/screens/payment_screen.dart';
+import '../features/orders/presentation/screens/price_calculator_screen.dart';
 import '../features/orders/presentation/screens/select_service_screen.dart';
 import '../features/orders/presentation/screens/upload_file_screen.dart';
 import '../features/profile/presentation/screens/add_address_screen.dart';
@@ -83,6 +88,26 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/order/config',
       builder: (context, state) => const FileConfigScreen(),
+    ),
+    GoRoute(
+      path: '/order/price-calculator',
+      builder: (context, state) => const PriceCalculatorScreen(),
+    ),
+    GoRoute(
+      path: '/order/delivery',
+      builder: (context, state) => const DeliveryPickScreen(),
+    ),
+    GoRoute(
+      path: '/order/summary',
+      builder: (context, state) => const OrderSummaryScreen(),
+    ),
+    GoRoute(
+      path: '/order/payment',
+      builder: (context, state) => const PaymentScreen(),
+    ),
+    GoRoute(
+      path: '/order/success',
+      builder: (context, state) => const OrderSuccessScreen(),
     ),
 
     // ─── Main app — Bottom Navigation (User) ────────────────────
