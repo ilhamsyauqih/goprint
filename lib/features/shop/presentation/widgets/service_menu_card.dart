@@ -7,11 +7,13 @@ class ServiceMenuCard extends StatelessWidget {
   const ServiceMenuCard({
     required this.service,
     this.onTap,
+    this.isSelected = false,
     super.key,
   });
 
   final ServiceItem service;
   final VoidCallback? onTap;
+  final bool isSelected;
 
   // Helper untuk format rupiah sederhana
   String _formatRupiah(double val) {
@@ -51,8 +53,10 @@ class ServiceMenuCard extends StatelessWidget {
         color: isDark ? AppColors.darkSurface : AppColors.lightCard,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-          width: 1,
+          color: isSelected
+              ? (isDark ? AppColors.teal300 : AppColors.teal700)
+              : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
+          width: isSelected ? 1.8 : 1,
         ),
         boxShadow: [
           BoxShadow(
@@ -134,23 +138,58 @@ class ServiceMenuCard extends StatelessWidget {
             // ─── Tombol Aksi "Pilih" ─────────────────────────────────────
             ElevatedButton(
               onPressed: onTap,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? AppColors.teal300 : AppColors.teal700,
-                foregroundColor: isDark ? AppColors.teal900 : Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: Text(
-                'Pilih',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: isDark ? AppColors.teal900 : Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              style: isSelected
+                  ? ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: isDark ? AppColors.teal300 : AppColors.teal700,
+                      shadowColor: Colors.transparent,
+                      side: BorderSide(
+                        color: isDark ? AppColors.teal300 : AppColors.teal700,
+                        width: 1.5,
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    )
+                  : ElevatedButton.styleFrom(
+                      backgroundColor: isDark ? AppColors.teal300 : AppColors.teal700,
+                      foregroundColor: isDark ? AppColors.teal900 : Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+              child: isSelected
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.check_rounded,
+                          size: 14,
+                          color: isDark ? AppColors.teal300 : AppColors.teal700,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Terpilih',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: isDark ? AppColors.teal300 : AppColors.teal700,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      'Pilih',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: isDark ? AppColors.teal900 : Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
             ),
           ],
         ),

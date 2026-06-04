@@ -8,7 +8,10 @@ import '../features/home/presentation/screens/home_screen.dart';
 import '../features/main/presentation/main_layout.dart';
 import '../features/notifications/presentation/screens/notification_screen.dart';
 import '../features/onboarding/presentation/screens/onboarding_screen.dart';
+import '../features/orders/presentation/screens/file_config_screen.dart';
 import '../features/orders/presentation/screens/order_list_screen.dart';
+import '../features/orders/presentation/screens/select_service_screen.dart';
+import '../features/orders/presentation/screens/upload_file_screen.dart';
 import '../features/profile/presentation/screens/add_address_screen.dart';
 import '../features/profile/presentation/screens/address_list_screen.dart';
 import '../features/profile/presentation/screens/change_password_screen.dart';
@@ -63,6 +66,23 @@ final GoRouter appRouter = GoRouter(
         final shopId = state.pathParameters['id'] ?? '1';
         return ShopDetailScreen(shopId: shopId);
       },
+    ),
+
+    // ─── Order Flow routes ───────────────────────────────────────
+    GoRoute(
+      path: '/order/select-service/:shopId',
+      builder: (context, state) {
+        final shopId = state.pathParameters['shopId'] ?? '1';
+        return SelectServiceScreen(shopId: shopId);
+      },
+    ),
+    GoRoute(
+      path: '/order/upload',
+      builder: (context, state) => const UploadFileScreen(),
+    ),
+    GoRoute(
+      path: '/order/config',
+      builder: (context, state) => const FileConfigScreen(),
     ),
 
     // ─── Main app — Bottom Navigation (User) ────────────────────
