@@ -74,6 +74,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
     // Simpan data metode pembayaran
     _orderFlow.paymentMethod = _selectedMethod;
     _orderFlow.paymentProofPath = _uploadedProofPath;
+    _orderFlow.saveCurrentOrder();
+
 
     // Tampilkan Loading Overlay tiruan sebelum sukses
     showDialog(

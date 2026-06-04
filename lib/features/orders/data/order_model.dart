@@ -25,6 +25,7 @@ class OrderModel {
   OrderStatus status;
   final DateTime date;
   final int totalFee;
+  bool isReviewed;
 
   OrderModel({
     required this.orderNumber,
@@ -39,6 +40,7 @@ class OrderModel {
     required this.status,
     required this.date,
     required this.totalFee,
+    this.isReviewed = false,
   });
 
   OrderModel copyWith({
@@ -54,6 +56,7 @@ class OrderModel {
     OrderStatus? status,
     DateTime? date,
     int? totalFee,
+    bool? isReviewed,
   }) {
     return OrderModel(
       orderNumber: orderNumber ?? this.orderNumber,
@@ -68,6 +71,7 @@ class OrderModel {
       status: status ?? this.status,
       date: date ?? this.date,
       totalFee: totalFee ?? this.totalFee,
+      isReviewed: isReviewed ?? this.isReviewed,
     );
   }
 }

@@ -74,13 +74,43 @@ class Shop {
     required this.reviews,
     required this.operatingHours,
   });
+
+  Shop copyWith({
+    String? id,
+    String? name,
+    String? imageUrl,
+    double? rating,
+    String? distance,
+    bool? isOpen,
+    String? description,
+    String? address,
+    String? phone,
+    List<ServiceItem>? services,
+    List<ReviewItem>? reviews,
+    List<OperatingHour>? operatingHours,
+  }) {
+    return Shop(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      imageUrl: imageUrl ?? this.imageUrl,
+      rating: rating ?? this.rating,
+      distance: distance ?? this.distance,
+      isOpen: isOpen ?? this.isOpen,
+      description: description ?? this.description,
+      address: address ?? this.address,
+      phone: phone ?? this.phone,
+      services: services ?? this.services,
+      reviews: reviews ?? this.reviews,
+      operatingHours: operatingHours ?? this.operatingHours,
+    );
+  }
 }
 
 /// Sumber data dummy untuk visualisasi UI Toko.
 class MockShops {
   MockShops._();
 
-  static const List<Shop> shops = [
+  static final List<Shop> shops = [
     Shop(
       id: '1',
       name: 'Fotokopi Surya Gemilang',

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../data/order_flow_manager.dart';
@@ -261,20 +263,35 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           ),
                         )
                       : ElevatedButton.icon(
-                          onPressed: () {
-                            // Pindah ke halaman tulis ulasan (R2) jika ulasan tersedia
-                            // context.push('/order/review/${order.orderNumber}');
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Fitur Beri Ulasan akan hadir pada langkah berikutnya (R2)!'),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.rate_review_rounded, size: 18),
-                          label: const Text('Beri Ulasan'),
+                          onPressed: order.isReviewed
+                              ? null
+                              : () async {
+                                  // Navigasi ke halaman tulis ulasan (R2) dan tunggu hasilnya
+                                  final reviewed = await context.push<bool>(
+                                    '/orders/review/${order.orderNumber}',
+                                  );
+                                  if (reviewed == true) {
+                                    setState(() {
+                                      _loadOrder();
+                                    });
+                                  }
+                                },
+                          icon: Icon(
+                            order.isReviewed
+                                ? Icons.check_circle_rounded
+                                : Icons.rate_review_rounded,
+                            size: 18,
+                          ),
+                          label: Text(
+                            order.isReviewed ? 'Ulasan Telah Dikirim' : 'Beri Ulasan',
+                          ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isDark ? AppColors.teal300 : AppColors.teal700,
-                            foregroundColor: isDark ? AppColors.teal900 : Colors.white,
+                            backgroundColor: order.isReviewed
+                                ? (isDark ? Colors.grey.shade800 : Colors.grey.shade300)
+                                : (isDark ? AppColors.teal300 : AppColors.teal700),
+                            foregroundColor: order.isReviewed
+                                ? (isDark ? Colors.grey.shade500 : Colors.grey.shade600)
+                                : (isDark ? AppColors.teal900 : Colors.white),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),

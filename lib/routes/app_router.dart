@@ -10,6 +10,7 @@ import '../features/notifications/presentation/screens/notification_screen.dart'
 import '../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../features/orders/presentation/screens/delivery_pick_screen.dart';
 import '../features/orders/presentation/screens/file_config_screen.dart';
+import '../features/orders/presentation/screens/order_detail_screen.dart';
 import '../features/orders/presentation/screens/order_list_screen.dart';
 import '../features/orders/presentation/screens/order_success_screen.dart';
 import '../features/orders/presentation/screens/order_summary_screen.dart';
@@ -17,6 +18,7 @@ import '../features/orders/presentation/screens/payment_screen.dart';
 import '../features/orders/presentation/screens/price_calculator_screen.dart';
 import '../features/orders/presentation/screens/select_service_screen.dart';
 import '../features/orders/presentation/screens/upload_file_screen.dart';
+import '../features/orders/presentation/screens/write_review_screen.dart';
 import '../features/profile/presentation/screens/add_address_screen.dart';
 import '../features/profile/presentation/screens/address_list_screen.dart';
 import '../features/profile/presentation/screens/change_password_screen.dart';
@@ -132,6 +134,22 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: '/orders',
               builder: (context, state) => const OrderListScreen(),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (context, state) {
+                    final id = state.pathParameters['id'] ?? '';
+                    return OrderDetailScreen(orderId: id);
+                  },
+                ),
+                GoRoute(
+                  path: 'review/:id',
+                  builder: (context, state) {
+                    final id = state.pathParameters['id'] ?? '';
+                    return WriteReviewScreen(orderId: id);
+                  },
+                ),
+              ],
             ),
           ],
         ),
