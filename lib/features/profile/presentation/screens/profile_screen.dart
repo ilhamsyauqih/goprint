@@ -62,6 +62,12 @@ class ProfileScreen extends StatelessWidget {
             subtitle: 'Notifikasi, tema, tentang app, logout',
             onTap: () => context.push('/profile/settings'),
           ),
+          _ProfileMenuTile(
+            icon: Icons.admin_panel_settings_rounded,
+            title: 'Dashboard Admin',
+            subtitle: 'Kelola pesanan, statistik, dan toko (Khusus Admin)',
+            onTap: () => context.push('/admin/dashboard'),
+          ),
         ],
       ),
     );
