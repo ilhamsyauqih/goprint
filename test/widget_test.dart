@@ -2,14 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:goprint/app.dart';
+import 'package:goprint/features/notifications/data/notification_store.dart';
+import 'package:goprint/features/notifications/presentation/screens/notification_screen.dart';
 import 'package:goprint/features/profile/presentation/screens/add_address_screen.dart';
 import 'package:goprint/features/profile/presentation/screens/change_password_screen.dart';
 import 'package:goprint/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:goprint/features/profile/presentation/screens/profile_screen.dart';
 import 'package:goprint/features/profile/presentation/screens/settings_screen.dart';
 import 'package:goprint/features/splash/presentation/screens/splash_screen.dart';
+import 'package:goprint/shared/widgets/custom_bottom_nav_bar.dart';
 
 void main() {
+  setUp(() {
+    notificationStore.reset();
+  });
+
   testWidgets('GoPrintApp starts with SplashScreen', (
     WidgetTester tester,
   ) async {
@@ -95,5 +102,64 @@ void main() {
     expect(find.text('Notifikasi Promo'), findsOneWidget);
     expect(find.text('Tema'), findsOneWidget);
     expect(find.text('Logout'), findsOneWidget);
+  });
+
+  testWidgets(
+    'NotificationScreen lists unread notifications and marks all read',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: NotificationScreen()));
+
+      expect(find.text('2 notifikasi belum dibaca'), findsOneWidget);
+      expect(find.text('Pesanan siap diantar'), findsOneWidget);
+      expect(find.text('Pembayaran terverifikasi'), findsOneWidget);
+
+      await tester.tap(find.text('Tandai Semua Dibaca'));
+      await tester.pump();
+
+      expect(find.text('Semua notifikasi sudah dibaca'), findsOneWidget);
+      expect(find.text('Tandai Semua Dibaca'), findsNothing);
+    },
+  );
+
+  testWidgets('NotificationScreen shows empty state', (
+    WidgetTester tester,
+  ) async {
+    notificationStore.clear();
+
+    await tester.pumpWidget(const MaterialApp(home: NotificationScreen()));
+
+    expect(find.text('Belum ada notifikasi'), findsOneWidget);
+    expect(
+      find.text('Update pesanan, pembayaran, dan promo akan muncul di sini.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('CustomBottomNavBar shows unread notification badge', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(
+          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+            selectedItemColor: Colors.teal,
+            unselectedItemColor: Colors.grey,
+          ),
+        ),
+        home: Scaffold(
+          bottomNavigationBar: CustomBottomNavBar(
+            currentIndex: 0,
+            onTap: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('2'), findsOneWidget);
+
+    notificationStore.markAllAsRead();
+    await tester.pump();
+
+    expect(find.text('2'), findsNothing);
   });
 }

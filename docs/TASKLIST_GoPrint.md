@@ -47,11 +47,11 @@
 
 ### A4 · Notifikasi
 
-- [ ] Buat `NotificationScreen` — daftar notifikasi (title, body, waktu, status baca)
-- [ ] Komponen: `NotificationCard` — card notifikasi dengan warna per tipe
-- [ ] Tampil badge merah di ikon notifikasi jika ada yang belum dibaca
-- [ ] Tombol "Tandai Semua Dibaca"
-- [ ] State kosong: ilustrasi + teks "Belum ada notifikasi"
+- [x] Buat `NotificationScreen` — daftar notifikasi (title, body, waktu, status baca)
+- [x] Komponen: `NotificationCard` — card notifikasi dengan warna per tipe
+- [x] Tampil badge merah di ikon notifikasi jika ada yang belum dibaca
+- [x] Tombol "Tandai Semua Dibaca"
+- [x] State kosong: ilustrasi + teks "Belum ada notifikasi"
 
 ---
 
@@ -119,7 +119,7 @@
 
 ## 🟧 RAFIF
 
-### R1 · Daftar & Tracking Pesanan (User)
+### R1 · Daftar & Tracking Pesanan (User)git 
 
 - [ ] Buat `OrderListScreen` — tab Aktif / Selesai / Dibatalkan
 - [ ] Komponen: `OrderCard` — nomor pesanan, nama toko, status badge, total, tanggal
