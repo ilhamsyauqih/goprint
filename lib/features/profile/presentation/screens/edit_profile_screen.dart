@@ -4,6 +4,7 @@ import '../../../../core/utils/validators.dart';
 import '../../../../features/auth/presentation/widgets/auth_text_field.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/primary_button.dart';
+import '../../data/profile_store.dart';
 import '../widgets/avatar_picker.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -23,11 +24,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: 'Amir Mahendra');
-    _phoneController = TextEditingController(text: '081234567890');
-    _addressController = TextEditingController(
-      text: 'Kos Melati, Jl. Kampus No. 12',
-    );
+    final profile = profileStore.profile;
+    _nameController = TextEditingController(text: profile.name);
+    _phoneController = TextEditingController(text: profile.phone);
+    _addressController = TextEditingController(text: profile.primaryAddress);
   }
 
   @override
@@ -48,6 +48,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!mounted) {
       return;
     }
+
+    profileStore.updateProfile(
+      name: _nameController.text.trim(),
+      phone: _phoneController.text.trim(),
+      primaryAddress: _addressController.text.trim(),
+    );
 
     setState(() => _isSaving = false);
     ScaffoldMessenger.of(

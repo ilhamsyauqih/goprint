@@ -4,6 +4,7 @@ import '../../../../core/utils/validators.dart';
 import '../../../../features/auth/presentation/widgets/auth_text_field.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/primary_button.dart';
+import '../../data/profile_store.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -49,6 +50,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     if (!mounted) {
       return;
     }
+
+    profileStore.changePassword();
 
     setState(() => _isSaving = false);
     ScaffoldMessenger.of(context).showSnackBar(
