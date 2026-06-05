@@ -4,13 +4,31 @@ class ServiceItem {
   final double priceStartingFrom;
   final String estimateTime;
   final String category; // 'Print', 'Jilid', 'Laminating', 'Scan', 'Fotokopi', 'Template'
+  final bool isActive;
 
   const ServiceItem({
     required this.name,
     required this.priceStartingFrom,
     required this.estimateTime,
     required this.category,
+    this.isActive = true,
   });
+
+  ServiceItem copyWith({
+    String? name,
+    double? priceStartingFrom,
+    String? estimateTime,
+    String? category,
+    bool? isActive,
+  }) {
+    return ServiceItem(
+      name: name ?? this.name,
+      priceStartingFrom: priceStartingFrom ?? this.priceStartingFrom,
+      estimateTime: estimateTime ?? this.estimateTime,
+      category: category ?? this.category,
+      isActive: isActive ?? this.isActive,
+    );
+  }
 }
 
 /// Model untuk representasi ulasan pembeli toko.
@@ -21,6 +39,7 @@ class ReviewItem {
   final String date;
   final String avatarUrl;
   final List<String> reviewPhotos;
+  final String? adminReply;
 
   const ReviewItem({
     required this.name,
@@ -29,7 +48,28 @@ class ReviewItem {
     required this.date,
     required this.avatarUrl,
     this.reviewPhotos = const [],
+    this.adminReply,
   });
+
+  ReviewItem copyWith({
+    String? name,
+    double? rating,
+    String? comment,
+    String? date,
+    String? avatarUrl,
+    List<String>? reviewPhotos,
+    String? adminReply,
+  }) {
+    return ReviewItem(
+      name: name ?? this.name,
+      rating: rating ?? this.rating,
+      comment: comment ?? this.comment,
+      date: date ?? this.date,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      reviewPhotos: reviewPhotos ?? this.reviewPhotos,
+      adminReply: adminReply ?? this.adminReply,
+    );
+  }
 }
 
 /// Model untuk jam operasional per hari.
@@ -59,6 +99,8 @@ class Shop {
   final List<ServiceItem> services;
   final List<ReviewItem> reviews;
   final List<OperatingHour> operatingHours;
+  final String verificationStatus; // 'approved' | 'pending' | 'suspended'
+  final String? suspensionReason;
 
   const Shop({
     required this.id,
@@ -73,6 +115,8 @@ class Shop {
     required this.services,
     required this.reviews,
     required this.operatingHours,
+    this.verificationStatus = 'approved',
+    this.suspensionReason,
   });
 
   Shop copyWith({
@@ -88,6 +132,8 @@ class Shop {
     List<ServiceItem>? services,
     List<ReviewItem>? reviews,
     List<OperatingHour>? operatingHours,
+    String? verificationStatus,
+    String? suspensionReason,
   }) {
     return Shop(
       id: id ?? this.id,
@@ -102,6 +148,8 @@ class Shop {
       services: services ?? this.services,
       reviews: reviews ?? this.reviews,
       operatingHours: operatingHours ?? this.operatingHours,
+      verificationStatus: verificationStatus ?? this.verificationStatus,
+      suspensionReason: suspensionReason ?? this.suspensionReason,
     );
   }
 }
@@ -121,6 +169,7 @@ class MockShops {
       description: 'Menerima jasa print dokumen harian, skripsi, jilid hard/soft cover kilat, laminating ukuran A4 s/d A3. Pelayanan cepat dengan mesin berkecepatan tinggi.',
       address: 'Jl. Kaliurang KM 5.2, Gang Sunan Giri No. 12, Sleman, DI Yogyakarta',
       phone: '0812-3456-7890',
+      verificationStatus: 'approved',
       services: [
         ServiceItem(
           name: 'Print Dokumen A4 (Hitam Putih)',
@@ -201,6 +250,7 @@ class MockShops {
       description: 'Pusat cetak dokumen dan percetakan cepat. Menyediakan cetak brosur, poster, print warna laser jet kualitas tinggi, jilid softcover lem panas, laminasi doff/glossy.',
       address: 'Jl. Pandega Marta No. 8B, Sleman, DI Yogyakarta',
       phone: '0821-9876-5432',
+      verificationStatus: 'approved',
       services: [
         ServiceItem(
           name: 'Print Warna A4 (Laser)',
@@ -262,6 +312,7 @@ class MockShops {
       description: 'Melayani fotokopi eceran dan grosir, cetak dokumen PDF/Word via WhatsApp atau Flashdisk, laminating presisi tinggi, scan dokumen legalisasi.',
       address: 'Jl. Selokan Mataram No. 45, Caturtunggal, Depok, Sleman, DI Yogyakarta',
       phone: '0877-5555-1234',
+      verificationStatus: 'pending',
       services: [
         ServiceItem(
           name: 'Print Dokumen B/W',
@@ -303,6 +354,37 @@ class MockShops {
         OperatingHour(day: 'Rabu', hours: '08:00 - 18:00', isClosed: false),
         OperatingHour(day: 'Kamis', hours: '08:00 - 18:00', isClosed: false),
         OperatingHour(day: 'Jumat', hours: '08:00 - 18:00', isClosed: false),
+        OperatingHour(day: 'Sabtu', hours: 'Tutup', isClosed: true),
+        OperatingHour(day: 'Minggu', hours: 'Tutup', isClosed: true),
+      ],
+    ),
+    Shop(
+      id: '4',
+      name: 'Maju Jaya Print',
+      imageUrl: 'https://images.unsplash.com/photo-1512418490979-92798cec1380?q=80&w=600&auto=format&fit=crop',
+      rating: 3.9,
+      distance: '3.5 km',
+      isOpen: false,
+      description: 'Layanan print dokumen hitam-putih cepat dan terpercaya.',
+      address: 'Jl. Gejayan No. 15, Sleman, DI Yogyakarta',
+      phone: '0899-1111-2222',
+      verificationStatus: 'suspended',
+      suspensionReason: 'Melanggar syarat ketentuan layanan: spam promosi berulang kali',
+      services: [
+        ServiceItem(
+          name: 'Print Standar B/W',
+          priceStartingFrom: 500,
+          estimateTime: '5 menit',
+          category: 'Print',
+        ),
+      ],
+      reviews: [],
+      operatingHours: [
+        OperatingHour(day: 'Senin', hours: '08:00 - 17:00', isClosed: false),
+        OperatingHour(day: 'Selasa', hours: '08:00 - 17:00', isClosed: false),
+        OperatingHour(day: 'Rabu', hours: '08:00 - 17:00', isClosed: false),
+        OperatingHour(day: 'Kamis', hours: '08:00 - 17:00', isClosed: false),
+        OperatingHour(day: 'Jumat', hours: '08:00 - 17:00', isClosed: false),
         OperatingHour(day: 'Sabtu', hours: 'Tutup', isClosed: true),
         OperatingHour(day: 'Minggu', hours: 'Tutup', isClosed: true),
       ],

@@ -12,6 +12,7 @@
 | 🟦 **Amir** | Autentikasi · Profil · Onboarding · Notifikasi |
 | 🟩 **Ilham** | Home · Template · Order Flow (Pilih Toko → Upload) |
 | 🟧 **Rafif** | Tracking · Dashboard Admin · Laporan · Ulasan |
+| 🟪 **Super Admin** | Dashboard Global · Manajemen Mitra & User · Payout · Pengaturan Sistem |
 
 ---
 
@@ -142,45 +143,83 @@
 
 ### R3 · Dashboard Admin
 
-- [ ] Buat `AdminDrawer` — sidebar navigasi admin (header bergradasi, 8 menu item)
-- [ ] Buat `AdminDashboardScreen` — layout utama admin
-- [ ] Komponen: `StatCard` — kartu statistik (total pesanan, pendapatan, menunggu, proses)
-- [ ] Komponen: `RevenueLineChart` — grafik pendapatan 7/30 hari (fl_chart)
-- [ ] Komponen: `ServiceBarChart` — grafik pesanan per layanan (fl_chart)
-- [ ] Komponen: `PeriodFilterChip` — chip pilihan periode (Hari Ini, 7 Hari, 30 Hari, Custom)
-- [ ] Komponen: `RecentOrderList` — 5 pesanan terbaru dengan status real-time
+- [x] Buat `AdminDrawer` — sidebar navigasi admin (header bergradasi, 8 menu item)
+- [x] Buat `AdminDashboardScreen` — layout utama admin
+- [x] Komponen: `StatCard` — kartu statistik (total pesanan, pendapatan, menunggu, proses)
+- [x] Komponen: `RevenueLineChart` — grafik pendapatan 7/30 hari (fl_chart)
+- [x] Komponen: `ServiceBarChart` — grafik pesanan per layanan (fl_chart)
+- [x] Komponen: `PeriodFilterChip` — chip pilihan periode (Hari Ini, 7 Hari, 30 Hari, Custom)
+- [x] Komponen: `RecentOrderList` — 5 pesanan terbaru dengan status real-time
 
 ### R4 · Manajemen Pesanan (Admin)
 
-- [ ] Buat `AdminOrderListScreen` — tab filter + search + sort pesanan
-- [ ] Komponen: `AdminOrderCard` — kartu pesanan dengan nama pemesan, total, status badge
-- [ ] Buat `AdminOrderDetailScreen` — detail pesanan versi admin
-- [ ] Komponen: `CustomerInfoSection` — nama + tombol WhatsApp (url_launcher)
-- [ ] Komponen: `AdminActionButtons` — tombol aksi sesuai status pesanan
-- [ ] Komponen: `RejectReasonDialog` — dialog input alasan penolakan
-- [ ] Komponen: `SetEstimateDialog` — dialog set estimasi waktu selesai
-- [ ] Komponen: `PaymentVerificationSection` — tampil bukti transfer + tombol Approve/Reject
-- [ ] Komponen: `InternalNoteField` — field catatan internal admin
+- [x] Buat `AdminOrderListScreen` — tab filter + search + sort pesanan
+- [x] Komponen: `AdminOrderCard` — kartu pesanan dengan nama pemesan, total, status badge
+- [x] Buat `AdminOrderDetailScreen` — detail pesanan versi admin
+- [x] Komponen: `CustomerInfoSection` — nama + tombol WhatsApp (url_launcher)
+- [x] Komponen: `AdminActionButtons` — tombol aksi sesuai status pesanan
+- [x] Komponen: `RejectReasonDialog` — dialog input alasan penolakan
+- [x] Komponen: `SetEstimateDialog` — dialog set estimasi waktu selesai
+- [x] Komponen: `PaymentVerificationSection` — tampil bukti transfer + tombol Approve/Reject
+- [x] Komponen: `InternalNoteField` — field catatan internal admin
 
 ### R5 · Manajemen Layanan & Profil Toko (Admin)
 
-- [ ] Buat `AdminServiceListScreen` — daftar layanan toko + toggle aktif/nonaktif
-- [ ] Buat `AdminAddEditServiceScreen` — form tambah/edit layanan (semua field harga & opsi)
-- [ ] Komponen: `PaperTypePriceList` — form harga per jenis kertas
-- [ ] Komponen: `FinishingOptionList` — daftar opsi finishing dengan harga masing-masing
-- [ ] Buat `AdminShopProfileScreen` — form edit profil toko lengkap
-- [ ] Komponen: `ShopPhotoGallery` — tampil + kelola foto toko (maks 5)
-- [ ] Komponen: `OperatingHoursEditor` — set jam buka/tutup per hari + toggle libur
-- [ ] Komponen: `ShopStatusToggle` — toggle buka/tutup mendadak dengan konfirmasi dialog
+- [x] Buat `AdminServiceListScreen` — daftar layanan toko + toggle aktif/nonaktif
+- [x] Buat `AdminAddEditServiceScreen` — form tambah/edit layanan (semua field harga & opsi)
+- [x] Komponen: `PaperTypePriceList` — form harga per jenis kertas
+- [x] Komponen: `FinishingOptionList` — daftar opsi finishing dengan harga masing-masing
+- [x] Buat `AdminShopProfileScreen` — form edit profil toko lengkap
+- [x] Komponen: `ShopPhotoGallery` — tampil + kelola foto toko (maks 5)
+- [x] Komponen: `OperatingHoursEditor` — set jam buka/tutup per hari + toggle libur
+- [x] Komponen: `ShopStatusToggle` — toggle buka/tutup mendadak dengan konfirmasi dialog
 
 ### R6 · Laporan (Admin)
 
-- [ ] Buat `AdminReportScreen` — halaman laporan dengan tab Pendapatan / Pesanan
-- [ ] Komponen: `ReportSummaryCard` — total pendapatan, rata-rata nilai, completion rate
-- [ ] Komponen: `DateRangePicker` — pilih rentang tanggal custom
-- [ ] Komponen: `ExportButton` — tombol export ke PDF / Excel dengan loading state
-- [ ] Buat `AdminReviewListScreen` — daftar ulasan + filter bintang + tombol balas
-- [ ] Komponen: `AdminReviewCard` — kartu ulasan + kolom reply admin
+- [x] Buat `AdminReportScreen` — halaman laporan dengan tab Pendapatan / Pesanan
+- [x] Komponen: `ReportSummaryCard` — total pendapatan, rata-rata nilai, completion rate
+- [x] Komponen: `DateRangePicker` — pilih rentang tanggal custom
+- [x] Komponen: `ExportButton` — tombol export ke PDF / Excel dengan loading state
+- [x] Buat `AdminReviewListScreen` — daftar ulasan + filter bintang + tombol balas
+- [x] Komponen: `AdminReviewCard` — kartu ulasan + kolom reply admin
+
+---
+
+## 🟪 SUPER ADMIN (SA)
+
+### SA1 · Dashboard & Statistik Global (Super Admin)
+
+- [ ] Buat `SuperAdminDashboardScreen` — ringkasan total transaksi, toko aktif, total user, & grafik pertumbuhan
+- [ ] Komponen: `GlobalStatCard` — kartu statistik performa sistem (total GMV, fee platform, mitra baru)
+- [ ] Komponen: `SystemRevenueChart` — grafik pendapatan platform dan gross volume mingguan/bulanan (fl_chart)
+- [ ] Komponen: `WithdrawalSummaryWidget` — list ringkas request penarikan dana yang perlu segera diproses
+
+### SA2 · Manajemen Mitra Toko (Global Shop Management)
+
+- [ ] Buat `SuperAdminShopListScreen` — daftar semua toko mitra (Pending Approval, Aktif, Ditangguhkan)
+- [ ] Buat `SuperAdminShopDetailScreen` — detail profil toko, kelengkapan berkas/dokumen legal, koordinat maps
+- [ ] Komponen: `ShopApprovalActions` — tombol Aksi Approve / Reject pendaftaran mitra baru
+- [ ] Komponen: `SuspendShopDialog` — dialog input alasan penangguhan toko mitra
+
+### SA3 · Manajemen Pengguna & Hak Akses (User Management)
+
+- [ ] Buat `SuperAdminUserListScreen` — daftar semua user terdaftar dengan search & filter role
+- [ ] Buat `SuperAdminUserDetailScreen` — profil lengkap user, riwayat aktivitas, daftar toko terafiliasi
+- [ ] Komponen: `RoleSelectorDialog` — dialog untuk mengubah level/role user (Customer, Admin Toko, Super Admin)
+- [ ] Komponen: `BanUserDialog` — dialog pemblokiran akun dengan alasan spesifik
+
+### SA4 · Verifikasi Penarikan Dana (Withdrawal & Payouts)
+
+- [ ] Buat `SuperAdminPayoutListScreen` — daftar pengajuan penarikan saldo toko mitra
+- [ ] Komponen: `PayoutCard` — info nominal penarikan, nama bank, nomor rekening, pemilik rekening
+- [ ] Buat `SuperAdminPayoutDetailScreen` — verifikasi pencairan dana & upload bukti transfer bank
+- [ ] Komponen: `PayoutStatusBadge` — status pencairan (pending=abu, processing=kuning, success=hijau, rejected=merah)
+
+### SA5 · Pengaturan Global Aplikasi (System Settings)
+
+- [ ] Buat `SuperAdminSettingsScreen` — konfigurasi umum platform
+- [ ] Komponen: `PlatformFeeField` — field untuk mengatur besaran komisi platform (percentage fee)
+- [ ] Komponen: `MaintenanceModeToggle` — switch mode pemeliharaan sistem dengan custom banner
 
 ---
 
@@ -203,24 +242,29 @@
 
 ## 📊 Progress Tracker
 
-| Modul | Amir 🟦 | Ilham 🟩 | Rafif 🟧 |
-|-------|---------|---------|---------|
-| Onboarding & Splash | ⬜ | — | — |
-| Autentikasi | ⬜ | — | — |
-| Profil & Pengaturan | ⬜ | — | — |
-| Notifikasi (User) | ⬜ | — | — |
-| Layout & Navigasi | — | ⬜ | — |
-| Home Screen | — | ⬜ | — |
-| Toko (List & Detail) | — | ⬜ | — |
-| Order Flow (Upload & Konfigurasi) | — | ⬜ | — |
-| Order Flow (Harga & Bayar) | — | ⬜ | — |
-| Template Dokumen | — | ⬜ | — |
-| Tracking Pesanan (User) | — | — | ⬜ |
-| Ulasan & Rating | — | — | ⬜ |
-| Dashboard Admin | — | — | ⬜ |
-| Manajemen Pesanan Admin | — | — | ⬜ |
-| Manajemen Layanan & Toko Admin | — | — | ⬜ |
-| Laporan Admin | — | — | ⬜ |
+| Modul | Amir 🟦 | Ilham 🟩 | Rafif 🟧 | Super Admin 🟪 |
+|-------|---------|---------|---------|----------------|
+| Onboarding & Splash | ✅ | — | — | — |
+| Autentikasi | ✅ | — | — | — |
+| Profil & Pengaturan | ✅ | — | — | — |
+| Notifikasi (User) | ✅ | — | — | — |
+| Layout & Navigasi | — | ✅ | — | — |
+| Home Screen | — | ✅ | — | — |
+| Toko (List & Detail) | — | ✅ | — | — |
+| Order Flow (Upload & Konfigurasi) | — | ✅ | — | — |
+| Order Flow (Harga & Bayar) | — | ⬜ | — | — |
+| Template Dokumen | — | ⬜ | — | — |
+| Tracking Pesanan (User) | — | — | ⬜ | — |
+| Ulasan & Rating | — | — | ⬜ | — |
+| Dashboard Admin | — | — | ✅ | — |
+| Manajemen Pesanan Admin | — | — | ✅ | — |
+| Manajemen Layanan & Toko Admin | — | — | ✅ | — |
+| Laporan Admin | — | — | ✅ | — |
+| Dashboard Global (Super Admin) | — | — | — | ⬜ |
+| Manajemen Mitra Toko | — | — | — | ⬜ |
+| Manajemen User | — | — | — | ⬜ |
+| Verifikasi Payout / Withdrawal | — | — | — | ⬜ |
+| Pengaturan Global Aplikasi | — | — | — | ⬜ |
 
 > ⬜ Belum dimulai · 🟨 Sedang dikerjakan · ✅ Selesai
 
