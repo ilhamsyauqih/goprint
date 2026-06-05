@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_colors.dart';
+import '../../features/notifications/data/notification_store.dart';
+
 /// Bottom Navigation Bar kustom GoPrint — 5 tab, ikon + label, aksen teal.
 ///
 /// Tab: Home · Pesanan · Template · Notifikasi · Profil
@@ -47,48 +50,61 @@ class CustomBottomNavBar extends StatelessWidget {
     final navTheme = theme.bottomNavigationBarTheme;
     final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: navTheme.backgroundColor,
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.3)
-                : Colors.black.withValues(alpha: 0.06),
-            blurRadius: 16,
-            offset: const Offset(0, -4),
-          ),
-        ],
-        border: Border(
-          top: BorderSide(
-            color: isDark ? const Color(0xFF4D4D4D) : const Color(0xFFE0E0E0),
-            width: 0.5,
-          ),
-        ),
-      ),
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: 64,
-          child: Row(
-            children: List.generate(_items.length, (index) {
-              final item = _items[index];
-              final isActive = index == currentIndex;
+    return ValueListenableBuilder<List<GoPrintNotification>>(
+      valueListenable: notificationStore,
+      builder: (context, _, _) {
+        final unreadCount = notificationStore.unreadCount;
 
-              return Expanded(
-                child: _NavBarItem(
-                  icon: isActive ? item.activeIcon : item.icon,
-                  label: item.label,
-                  isActive: isActive,
-                  selectedColor: navTheme.selectedItemColor!,
-                  unselectedColor: navTheme.unselectedItemColor!,
-                  onTap: () => onTap(index),
-                ),
-              );
-            }),
+        return Container(
+          decoration: BoxDecoration(
+            color: navTheme.backgroundColor,
+            boxShadow: [
+              BoxShadow(
+                color: isDark
+                    ? Colors.black.withValues(alpha: 0.3)
+                    : Colors.black.withValues(alpha: 0.06),
+                blurRadius: 16,
+                offset: const Offset(0, -4),
+              ),
+            ],
+            border: Border(
+              top: BorderSide(
+                color: isDark
+                    ? const Color(0xFF4D4D4D)
+                    : const Color(0xFFE0E0E0),
+                width: 0.5,
+              ),
+            ),
           ),
-        ),
-      ),
+          child: SafeArea(
+            top: false,
+            child: SizedBox(
+              height: 64,
+              child: Row(
+                children: List.generate(_items.length, (index) {
+                  final item = _items[index];
+                  final isActive = index == currentIndex;
+                  final badgeCount = item.label == 'Notifikasi'
+                      ? unreadCount
+                      : 0;
+
+                  return Expanded(
+                    child: _NavBarItem(
+                      icon: isActive ? item.activeIcon : item.icon,
+                      label: item.label,
+                      isActive: isActive,
+                      selectedColor: navTheme.selectedItemColor!,
+                      unselectedColor: navTheme.unselectedItemColor!,
+                      badgeCount: badgeCount,
+                      onTap: () => onTap(index),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -112,6 +128,7 @@ class _NavBarItem extends StatelessWidget {
     required this.isActive,
     required this.selectedColor,
     required this.unselectedColor,
+    required this.badgeCount,
     required this.onTap,
   });
 
@@ -120,6 +137,7 @@ class _NavBarItem extends StatelessWidget {
   final bool isActive;
   final Color selectedColor;
   final Color unselectedColor;
+  final int badgeCount;
   final VoidCallback onTap;
 
   @override
@@ -144,14 +162,42 @@ class _NavBarItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: Icon(
-              icon,
-              key: ValueKey('$label-$isActive'),
-              color: color,
-              size: 24,
-            ),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Icon(
+                  icon,
+                  key: ValueKey('$label-$isActive'),
+                  color: color,
+                  size: 24,
+                ),
+              ),
+              if (badgeCount > 0)
+                Positioned(
+                  right: -8,
+                  top: -7,
+                  child: Container(
+                    constraints: const BoxConstraints(minWidth: 18),
+                    height: 18,
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                      color: AppColors.error,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      badgeCount > 9 ? '9+' : '$badgeCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 2),
           AnimatedDefaultTextStyle(
