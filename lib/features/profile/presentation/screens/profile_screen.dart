@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
+import '../../data/profile_store.dart';
 import '../widgets/avatar_picker.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -15,68 +16,76 @@ class ProfileScreen extends StatelessWidget {
         ? AppColors.darkMutedText
         : AppColors.lightSubtleText;
 
-    return Scaffold(
-      appBar: const CustomAppBar(title: 'Profil', showBackButton: false),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          _ProfileHeader(subtitleColor: subtitleColor),
-          const SizedBox(height: 20),
-          _ProfileInfoTile(
-            icon: Icons.mail_outline_rounded,
-            label: 'Email',
-            value: 'amir@goprint.id',
+    return AnimatedBuilder(
+      animation: profileStore,
+      builder: (context, _) {
+        final profile = profileStore.profile;
+
+        return Scaffold(
+          appBar: const CustomAppBar(title: 'Profil', showBackButton: false),
+          body: ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
+              _ProfileHeader(name: profile.name, subtitleColor: subtitleColor),
+              const SizedBox(height: 20),
+              _ProfileInfoTile(
+                icon: Icons.mail_outline_rounded,
+                label: 'Email',
+                value: profile.email,
+              ),
+              _ProfileInfoTile(
+                icon: Icons.phone_android_rounded,
+                label: 'Nomor HP',
+                value: profile.phone,
+              ),
+              _ProfileInfoTile(
+                icon: Icons.home_work_outlined,
+                label: 'Alamat Utama',
+                value: profile.primaryAddress,
+              ),
+              const SizedBox(height: 16),
+              _ProfileMenuTile(
+                icon: Icons.edit_rounded,
+                title: 'Edit Profil',
+                subtitle: 'Nama, nomor HP, dan alamat kos',
+                onTap: () => context.push('/profile/edit'),
+              ),
+              _ProfileMenuTile(
+                icon: Icons.location_on_outlined,
+                title: 'Alamat Tersimpan',
+                subtitle: 'Tambah, hapus, dan pilih alamat default',
+                onTap: () => context.push('/profile/addresses'),
+              ),
+              _ProfileMenuTile(
+                icon: Icons.lock_outline_rounded,
+                title: 'Ubah Password',
+                subtitle: 'Ganti password akun GoPrint',
+                onTap: () => context.push('/profile/change-password'),
+              ),
+              _ProfileMenuTile(
+                icon: Icons.settings_outlined,
+                title: 'Pengaturan',
+                subtitle: 'Notifikasi, tema, tentang app, logout',
+                onTap: () => context.push('/profile/settings'),
+              ),
+              _ProfileMenuTile(
+                icon: Icons.admin_panel_settings_rounded,
+                title: 'Dashboard Admin',
+                subtitle: 'Kelola pesanan, statistik, dan toko (Khusus Admin)',
+                onTap: () => context.push('/admin/dashboard'),
+              ),
+            ],
           ),
-          _ProfileInfoTile(
-            icon: Icons.phone_android_rounded,
-            label: 'Nomor HP',
-            value: '0812-3456-7890',
-          ),
-          _ProfileInfoTile(
-            icon: Icons.home_work_outlined,
-            label: 'Alamat Utama',
-            value: 'Kos Melati, Jl. Kampus No. 12',
-          ),
-          const SizedBox(height: 16),
-          _ProfileMenuTile(
-            icon: Icons.edit_rounded,
-            title: 'Edit Profil',
-            subtitle: 'Nama, nomor HP, dan alamat kos',
-            onTap: () => context.push('/profile/edit'),
-          ),
-          _ProfileMenuTile(
-            icon: Icons.location_on_outlined,
-            title: 'Alamat Tersimpan',
-            subtitle: 'Tambah, hapus, dan pilih alamat default',
-            onTap: () => context.push('/profile/addresses'),
-          ),
-          _ProfileMenuTile(
-            icon: Icons.lock_outline_rounded,
-            title: 'Ubah Password',
-            subtitle: 'Ganti password akun GoPrint',
-            onTap: () => context.push('/profile/change-password'),
-          ),
-          _ProfileMenuTile(
-            icon: Icons.settings_outlined,
-            title: 'Pengaturan',
-            subtitle: 'Notifikasi, tema, tentang app, logout',
-            onTap: () => context.push('/profile/settings'),
-          ),
-          _ProfileMenuTile(
-            icon: Icons.admin_panel_settings_rounded,
-            title: 'Dashboard Admin',
-            subtitle: 'Kelola pesanan, statistik, dan toko (Khusus Admin)',
-            onTap: () => context.push('/admin/dashboard'),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
 class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader({required this.subtitleColor});
+  const _ProfileHeader({required this.name, required this.subtitleColor});
 
+  final String name;
   final Color subtitleColor;
 
   @override
@@ -97,7 +106,7 @@ class _ProfileHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Amir Mahendra',
+                  name,
                   style: Theme.of(
                     context,
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),

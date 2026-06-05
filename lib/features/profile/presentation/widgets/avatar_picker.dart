@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../data/profile_store.dart';
 
-class AvatarPicker extends StatefulWidget {
+class AvatarPicker extends StatelessWidget {
   const AvatarPicker({this.size = 96, super.key});
 
   final double size;
 
-  @override
-  State<AvatarPicker> createState() => _AvatarPickerState();
-}
-
-class _AvatarPickerState extends State<AvatarPicker> {
-  IconData _avatarIcon = Icons.person_rounded;
-
-  Future<void> _showPicker() async {
+  Future<void> _showPicker(BuildContext context) async {
     final selectedIcon = await showModalBottomSheet<IconData>(
       context: context,
       showDragHandle: true,
@@ -51,58 +45,63 @@ class _AvatarPickerState extends State<AvatarPicker> {
       },
     );
 
-    if (selectedIcon == null || !mounted) {
+    if (selectedIcon == null) {
       return;
     }
 
-    setState(() => _avatarIcon = selectedIcon);
+    profileStore.updateAvatar(selectedIcon);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: 'Pilih foto profil',
-      child: InkWell(
-        borderRadius: BorderRadius.circular(widget.size),
-        onTap: _showPicker,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              width: widget.size,
-              height: widget.size,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: AppColors.headerGradient,
-              ),
-              child: Icon(
-                _avatarIcon,
-                color: Colors.white,
-                size: widget.size * 0.52,
-              ),
-            ),
-            Positioned(
-              right: -2,
-              bottom: -2,
-              child: Container(
-                width: widget.size * 0.34,
-                height: widget.size * 0.34,
-                decoration: BoxDecoration(
-                  color: AppColors.teal700,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
+    return AnimatedBuilder(
+      animation: profileStore,
+      builder: (context, _) {
+        return Semantics(
+          button: true,
+          label: 'Pilih foto profil',
+          child: InkWell(
+            borderRadius: BorderRadius.circular(size),
+            onTap: () => _showPicker(context),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: size,
+                  height: size,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: AppColors.headerGradient,
+                  ),
+                  child: Icon(
+                    profileStore.profile.avatarIcon,
+                    color: Colors.white,
+                    size: size * 0.52,
+                  ),
                 ),
-                child: Icon(
-                  Icons.edit_rounded,
-                  color: Colors.white,
-                  size: widget.size * 0.18,
+                Positioned(
+                  right: -2,
+                  bottom: -2,
+                  child: Container(
+                    width: size * 0.34,
+                    height: size * 0.34,
+                    decoration: BoxDecoration(
+                      color: AppColors.teal700,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: Icon(
+                      Icons.edit_rounded,
+                      color: Colors.white,
+                      size: size * 0.18,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
