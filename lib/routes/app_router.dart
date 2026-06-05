@@ -28,6 +28,8 @@ import '../features/profile/presentation/screens/settings_screen.dart';
 import '../features/shop/presentation/screens/shop_detail_screen.dart';
 import '../features/shop/presentation/screens/shop_list_screen.dart';
 import '../features/splash/presentation/screens/splash_screen.dart';
+import '../features/templates/data/mock_templates.dart';
+import '../features/templates/presentation/screens/template_detail_screen.dart';
 import '../features/templates/presentation/screens/template_list_screen.dart';
 
 /// Konfigurasi routing GoPrint — semua route user & admin.
@@ -160,6 +162,27 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: '/templates',
               builder: (context, state) => const TemplateListScreen(),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (context, state) {
+                    // Ambil object TemplateItem yang di-pass via GoRouter `extra`
+                    final tpl = state.extra as TemplateItem?;
+                    if (tpl != null) {
+                      return TemplateDetailScreen(template: tpl);
+                    }
+                    // Fallback: cari berdasarkan id jika extra kosong
+                    final id = state.pathParameters['id'] ?? '';
+                    final found = MockTemplates.templates.where(
+                      (t) => t.id == id,
+                    );
+                    if (found.isNotEmpty) {
+                      return TemplateDetailScreen(template: found.first);
+                    }
+                    return const TemplateListScreen();
+                  },
+                ),
+              ],
             ),
           ],
         ),
