@@ -13,6 +13,11 @@ import 'package:goprint/features/profile/presentation/screens/edit_profile_scree
 import 'package:goprint/features/profile/presentation/screens/profile_screen.dart';
 import 'package:goprint/features/profile/presentation/screens/settings_screen.dart';
 import 'package:goprint/features/splash/presentation/screens/splash_screen.dart';
+import 'package:goprint/features/templates/data/mock_templates.dart';
+import 'package:goprint/features/templates/data/template_store.dart';
+import 'package:goprint/features/templates/presentation/screens/template_detail_screen.dart';
+import 'package:goprint/features/templates/presentation/screens/template_list_screen.dart';
+import 'package:goprint/features/templates/presentation/widgets/template_category_chip.dart';
 import 'package:goprint/shared/widgets/custom_bottom_nav_bar.dart';
 
 void main() {
@@ -20,6 +25,7 @@ void main() {
     notificationStore.reset();
     profileStore.reset();
     appStateStore.reset();
+    templateStore.reset();
   });
 
   testWidgets('GoPrintApp starts with SplashScreen', (
@@ -220,5 +226,175 @@ void main() {
     await tester.pump();
 
     expect(find.text('2'), findsNothing);
+  });
+
+  // ─── I6 · Template Dokumen ───────────────────────────────────────────
+
+  testWidgets('TemplateListScreen menampilkan search bar dan category chips', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: TemplateListScreen()));
+    await tester.pump();
+
+    // Search bar harus ada
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('Cari template...'), findsOneWidget);
+
+    // Chip "Semua" harus ada dan terpilih secara default
+    expect(find.byType(TemplateCategoryChip), findsWidgets);
+    expect(find.text('Semua'), findsOneWidget);
+    expect(find.text('Surat Izin'), findsOneWidget);
+    expect(find.text('Cover'), findsOneWidget);
+  });
+
+  testWidgets('TemplateListScreen filter kategori mengubah daftar template', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: TemplateListScreen()));
+    await tester.pump();
+
+    // Pilih kategori "Cover"
+    await tester.tap(find.text('Cover'));
+    await tester.pump();
+
+    expect(templateStore.selectedCategory, equals('Cover'));
+    final coverTemplates = templateStore.filteredTemplates;
+    for (final tpl in coverTemplates) {
+      expect(tpl.category, equals('Cover'));
+    }
+  });
+
+  testWidgets(
+    'TemplateListScreen menampilkan empty state saat pencarian tidak ditemukan',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: TemplateListScreen()));
+      await tester.pump();
+
+      // Ketik query yang tidak ada hasilnya
+      await tester.enterText(
+        find.byType(TextField),
+        'xyzabcnotexist',
+      );
+      await tester.pump();
+
+      expect(find.text('Template tidak ditemukan'), findsAtLeast(1));
+      expect(
+        find.text(
+          'Coba kata kunci lain atau pilih kategori yang berbeda.',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'TemplateListScreen pencarian memfilter template berdasarkan nama',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: TemplateListScreen()));
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField), 'Skripsi');
+      await tester.pump();
+
+      final results = templateStore.filteredTemplates;
+      expect(results, isNotEmpty);
+      for (final tpl in results) {
+        final matchesName = tpl.name.toLowerCase().contains('skripsi');
+        final matchesDesc = tpl.description.toLowerCase().contains('skripsi');
+        expect(matchesName || matchesDesc, isTrue);
+      }
+    },
+  );
+
+  testWidgets('TemplateStore reset mengembalikan kategori ke Semua', (
+    WidgetTester tester,
+  ) async {
+    templateStore.selectCategory('Proposal');
+    expect(templateStore.selectedCategory, equals('Proposal'));
+
+    templateStore.reset();
+    expect(templateStore.selectedCategory, equals('Semua'));
+    expect(templateStore.searchQuery, isEmpty);
+  });
+
+  testWidgets('TemplateDetailScreen menampilkan nama dan tombol download', (
+    WidgetTester tester,
+  ) async {
+    const tpl = TemplateItem(
+      id: 'test-001',
+      name: 'Cover Skripsi / Tugas Akhir',
+      category: 'Cover',
+      description: 'Template cover skripsi sesuai standar tata naskah akademik.',
+      fileUrl: 'https://example.com/file.docx',
+      thumbnailUrl: 'https://example.com/thumb.jpg',
+      downloadCount: 5102,
+      rating: 4.8,
+      createdAt: '2026-01-03',
+    );
+
+    await tester.pumpWidget(
+      const MaterialApp(home: TemplateDetailScreen(template: tpl)),
+    );
+    await tester.pump();
+
+    // Nama template tampil
+    expect(find.text('Cover Skripsi / Tugas Akhir'), findsAtLeast(1));
+
+    // Tombol download DOCX & PDF
+    expect(find.text('Download DOCX'), findsOneWidget);
+    expect(find.text('Download PDF'), findsOneWidget);
+
+    // Deskripsi
+    expect(
+      find.text('Template cover skripsi sesuai standar tata naskah akademik.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets(
+    'TemplateDetailScreen tap Download PDF menampilkan snackbar sukses',
+    (WidgetTester tester) async {
+      const tpl = TemplateItem(
+        id: 'test-002',
+        name: 'Surat Izin Tidak Masuk',
+        category: 'Surat Izin',
+        description: 'Template surat izin resmi.',
+        fileUrl: 'https://example.com/file.docx',
+        thumbnailUrl: 'https://example.com/thumb.jpg',
+        downloadCount: 1200,
+        rating: 4.5,
+        createdAt: '2026-01-10',
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(home: TemplateDetailScreen(template: tpl)),
+      );
+      await tester.pump();
+
+      // Tap tombol Download PDF
+      await tester.tap(find.text('Download PDF'));
+      // Tunggu simulasi unduhan (2 detik)
+      await tester.pump(const Duration(milliseconds: 100));
+      // Loading indicator harus muncul (PDF button)
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      // Selesai
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Template berhasil diunduh (PDF)'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets('MockTemplates.formatDownloadCount format dengan benar', (
+    WidgetTester tester,
+  ) async {
+    expect(MockTemplates.formatDownloadCount(500), equals('500'));
+    expect(MockTemplates.formatDownloadCount(1000), equals('1k'));
+    expect(MockTemplates.formatDownloadCount(1200), equals('1.2k'));
+    expect(MockTemplates.formatDownloadCount(5102), equals('5.1k'));
   });
 }
