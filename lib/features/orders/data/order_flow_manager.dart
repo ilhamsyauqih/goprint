@@ -93,6 +93,10 @@ class OrderFlowManager {
       status: OrderStatus.processing,
       date: DateTime.now().subtract(const Duration(hours: 3)),
       totalFee: 65000,
+      customerName: 'Amir Syarifuddin',
+      customerPhone: '+6281234567891',
+      estimatedCompletionTime: '2 Jam',
+      internalNote: 'Minta kertas HVS tebal untuk cover depan',
     ),
     OrderModel(
       orderNumber: 'GP-2045',
@@ -114,12 +118,14 @@ class OrderFlowManager {
       deliveryType: 'delivery',
       deliveryAddress: 'Kost Orange, Gang Sunan Giri No. 5, Sleman',
       deliveryFee: 8000,
-      paymentMethod: 'QRIS',
-      paymentProofPath: null,
+      paymentMethod: 'Transfer',
+      paymentProofPath: 'assets/images/proof_mock.png', // Mock transfer proof image
       paymentStatus: 'Menunggu Verifikasi',
       status: OrderStatus.pending,
       date: DateTime.now().subtract(const Duration(minutes: 45)),
       totalFee: 15500,
+      customerName: 'Rizky Pratama',
+      customerPhone: '+6281234567892',
     ),
     OrderModel(
       orderNumber: 'GP-3081',
@@ -146,6 +152,9 @@ class OrderFlowManager {
       status: OrderStatus.ready,
       date: DateTime.now().subtract(const Duration(hours: 5)),
       totalFee: 32000,
+      customerName: 'Ilham Syauqi',
+      customerPhone: '+6281234567893',
+      estimatedCompletionTime: '30 Menit',
     ),
     OrderModel(
       orderNumber: 'GP-0981',
@@ -172,6 +181,8 @@ class OrderFlowManager {
       status: OrderStatus.completed,
       date: DateTime.now().subtract(const Duration(days: 3)),
       totalFee: 4000,
+      customerName: 'Rafif Prabowo',
+      customerPhone: '+6281234567894',
     ),
     OrderModel(
       orderNumber: 'GP-0872',
@@ -198,6 +209,9 @@ class OrderFlowManager {
       status: OrderStatus.cancelled,
       date: DateTime.now().subtract(const Duration(days: 5)),
       totalFee: 180000,
+      customerName: 'Siti Aminah',
+      customerPhone: '+6281234567895',
+      rejectReason: 'Bukti transfer tidak valid/kosong',
     ),
   ];
 
@@ -217,6 +231,8 @@ class OrderFlowManager {
       status: OrderStatus.pending,
       date: DateTime.now(),
       totalFee: totalFee,
+      customerName: 'Budi Santoso',
+      customerPhone: '+6281234567890',
     );
     orders.insert(0, order);
   }

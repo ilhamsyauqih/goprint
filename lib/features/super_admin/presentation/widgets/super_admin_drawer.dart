@@ -2,27 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 
-/// Sidebar navigasi kustom admin (AdminDrawer) dengan 8 item menu.
-class AdminDrawer extends StatelessWidget {
+/// Sidebar navigasi kustom super admin (SuperAdminDrawer) dengan tema warna ungu/indigo premium.
+class SuperAdminDrawer extends StatelessWidget {
   final String currentRoute;
 
-  const AdminDrawer({required this.currentRoute, super.key});
+  const SuperAdminDrawer({required this.currentRoute, super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final headerGradient = isDark
+        ? const LinearGradient(
+            colors: [Color(0xFF311B92), Color(0xFF1A237E)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          )
+        : const LinearGradient(
+            colors: [Color(0xFF673AB7), Color(0xFF3F51B5)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          );
+
     return Drawer(
       backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
       child: Column(
         children: [
-          // Header Gradasi dengan identitas toko admin
+          // Header Gradasi Ungu Premium
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(20, 60, 20, 24),
             decoration: BoxDecoration(
-              gradient: isDark ? AppColors.headerGradientDark : AppColors.headerGradient,
+              gradient: headerGradient,
             ),
             child: Row(
               children: [
@@ -36,7 +48,7 @@ class AdminDrawer extends StatelessWidget {
                   ),
                   child: const Center(
                     child: Icon(
-                      Icons.admin_panel_settings_rounded,
+                      Icons.security_rounded,
                       color: Colors.white,
                       size: 28,
                     ),
@@ -48,7 +60,7 @@ class AdminDrawer extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Surya Gemilang',
+                        'Rafif Hidayat',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 16,
@@ -58,10 +70,10 @@ class AdminDrawer extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Admin Panel',
+                        'Super Admin Panel',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.teal.shade100,
+                          color: Colors.purple.shade100,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -72,52 +84,40 @@ class AdminDrawer extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          // Daftar Menu Utama Admin (8 Item Menu)
+          // Daftar Menu Utama Super Admin
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               children: [
                 _buildMenuItem(
                   context,
-                  title: 'Dashboard Admin',
-                  icon: Icons.dashboard_rounded,
-                  route: '/admin/dashboard',
+                  title: 'Dashboard Global',
+                  icon: Icons.analytics_rounded,
+                  route: '/superadmin/dashboard',
                 ),
                 _buildMenuItem(
                   context,
-                  title: 'Pesanan Masuk',
-                  icon: Icons.receipt_long_rounded,
-                  route: '/admin/orders',
+                  title: 'Mitra Toko',
+                  icon: Icons.store_mall_directory_rounded,
+                  route: '/superadmin/shops',
                 ),
                 _buildMenuItem(
                   context,
-                  title: 'Daftar Layanan',
-                  icon: Icons.print_rounded,
-                  route: '/admin/services',
+                  title: 'Manajemen User',
+                  icon: Icons.people_alt_rounded,
+                  route: '/superadmin/users',
                 ),
                 _buildMenuItem(
                   context,
-                  title: 'Profil Toko',
-                  icon: Icons.storefront_rounded,
-                  route: '/admin/shop-profile',
-                ),
-                _buildMenuItem(
-                  context,
-                  title: 'Laporan Keuangan',
-                  icon: Icons.bar_chart_rounded,
-                  route: '/admin/reports',
-                ),
-                _buildMenuItem(
-                  context,
-                  title: 'Ulasan Pelanggan',
-                  icon: Icons.rate_review_rounded,
-                  route: '/admin/reviews',
+                  title: 'Penarikan Dana',
+                  icon: Icons.account_balance_wallet_rounded,
+                  route: '/superadmin/payouts',
                 ),
                 _buildMenuItem(
                   context,
                   title: 'Pengaturan Sistem',
-                  icon: Icons.settings_rounded,
-                  route: '/admin/settings',
+                  icon: Icons.settings_input_component_rounded,
+                  route: '/superadmin/settings',
                 ),
                 const Divider(height: 24, thickness: 1),
                 _buildMenuItem(
@@ -134,7 +134,7 @@ class AdminDrawer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
-              'GoPrint Admin v1.0.0',
+              'GoPrint Platform v1.0.0',
               style: TextStyle(
                 fontSize: 11,
                 color: isDark ? AppColors.darkMutedText : AppColors.lightSubtleText,
@@ -157,13 +157,13 @@ class AdminDrawer extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isSelected = currentRoute == route;
 
-    final activeColor = isDark ? AppColors.teal300 : AppColors.teal700;
+    final activeColor = isDark ? Colors.purple.shade300 : Colors.purple.shade800;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 4),
       decoration: BoxDecoration(
         color: isSelected
-            ? activeColor.withValues(alpha: isDark ? 0.15 : 0.08)
+            ? activeColor.withValues(alpha: isDark ? 0.2 : 0.08)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(10),
       ),
@@ -193,24 +193,8 @@ class AdminDrawer extends StatelessWidget {
           if (isAction) {
             context.go(route);
           } else {
-            // Arahkan ke rute jika tidak sedang aktif
             if (!isSelected) {
-              if (route == '/admin/dashboard' ||
-                  route == '/admin/orders' ||
-                  route == '/admin/services' ||
-                  route == '/admin/shop-profile' ||
-                  route == '/admin/reports' ||
-                  route == '/admin/reviews') {
-                context.go(route);
-              } else {
-                // Tampilkan snackbar pemberitahuan fitur mockup
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Menu "$title" akan diaktifkan di task berikutnya!'),
-                    duration: const Duration(seconds: 1),
-                  ),
-                );
-              }
+              context.go(route);
             }
           }
         },

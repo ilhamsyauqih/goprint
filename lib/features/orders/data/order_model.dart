@@ -21,11 +21,18 @@ class OrderModel {
   final int deliveryFee;
   final String paymentMethod;
   final String? paymentProofPath;
-  final String paymentStatus; // 'Menunggu Verifikasi' | 'Terverifikasi' | 'Gagal' | 'Dibatalkan'
+  String paymentStatus; // 'Menunggu Verifikasi' | 'Terverifikasi' | 'Gagal' | 'Dibatalkan'
   OrderStatus status;
   final DateTime date;
   final int totalFee;
   bool isReviewed;
+
+  // R4 Admin fields
+  final String customerName;
+  final String customerPhone;
+  String? rejectReason;
+  String? estimatedCompletionTime;
+  String? internalNote;
 
   OrderModel({
     required this.orderNumber,
@@ -41,6 +48,11 @@ class OrderModel {
     required this.date,
     required this.totalFee,
     this.isReviewed = false,
+    this.customerName = 'Pelanggan Umum',
+    this.customerPhone = '+6281234567890',
+    this.rejectReason,
+    this.estimatedCompletionTime,
+    this.internalNote,
   });
 
   OrderModel copyWith({
@@ -57,6 +69,11 @@ class OrderModel {
     DateTime? date,
     int? totalFee,
     bool? isReviewed,
+    String? customerName,
+    String? customerPhone,
+    String? rejectReason,
+    String? estimatedCompletionTime,
+    String? internalNote,
   }) {
     return OrderModel(
       orderNumber: orderNumber ?? this.orderNumber,
@@ -72,6 +89,11 @@ class OrderModel {
       date: date ?? this.date,
       totalFee: totalFee ?? this.totalFee,
       isReviewed: isReviewed ?? this.isReviewed,
+      customerName: customerName ?? this.customerName,
+      customerPhone: customerPhone ?? this.customerPhone,
+      rejectReason: rejectReason ?? this.rejectReason,
+      estimatedCompletionTime: estimatedCompletionTime ?? this.estimatedCompletionTime,
+      internalNote: internalNote ?? this.internalNote,
     );
   }
 }

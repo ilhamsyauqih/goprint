@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../orders/data/order_flow_manager.dart';
 import '../../../orders/presentation/widgets/status_badge.dart';
@@ -79,13 +80,7 @@ class RecentOrderList extends StatelessWidget {
                 final order = recentOrders[index];
                 return InkWell(
                   onTap: () {
-                    // Tampilkan snackbar placeholder navigasi detail pesanan admin (R4)
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Rincian pesanan ${order.orderNumber} versi admin akan diaktifkan di R4!'),
-                        duration: const Duration(seconds: 1),
-                      ),
-                    );
+                    context.push('/admin/orders/${order.orderNumber}');
                   },
                   child: Row(
                     children: [
@@ -131,7 +126,7 @@ class RecentOrderList extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Amir Mahendra · ${order.uploadedFiles.length} berkas',
+                                  '${order.customerName} · ${order.uploadedFiles.length} berkas',
                                   style: theme.textTheme.labelMedium?.copyWith(
                                     color: isDark ? AppColors.darkMutedText : AppColors.lightSubtleText,
                                     fontSize: 12,

@@ -1,6 +1,22 @@
 import 'package:go_router/go_router.dart';
 
 import '../features/admin/presentation/screens/admin_dashboard_screen.dart';
+import '../features/super_admin/presentation/screens/super_admin_dashboard_screen.dart';
+import '../features/super_admin/presentation/screens/super_admin_shop_list_screen.dart';
+import '../features/super_admin/presentation/screens/super_admin_shop_detail_screen.dart';
+import '../features/super_admin/presentation/screens/super_admin_user_list_screen.dart';
+import '../features/super_admin/presentation/screens/super_admin_user_detail_screen.dart';
+import '../features/super_admin/presentation/screens/super_admin_payout_list_screen.dart';
+import '../features/super_admin/presentation/screens/super_admin_payout_detail_screen.dart';
+import '../features/super_admin/presentation/screens/super_admin_settings_screen.dart';
+import '../features/admin/presentation/screens/admin_order_list_screen.dart';
+import '../features/admin/presentation/screens/admin_order_detail_screen.dart';
+import '../features/admin/presentation/screens/admin_service_list_screen.dart';
+import '../features/admin/presentation/screens/admin_add_edit_service_screen.dart';
+import '../features/admin/presentation/screens/admin_shop_profile_screen.dart';
+import '../features/admin/presentation/screens/admin_report_screen.dart';
+import '../features/admin/presentation/screens/admin_review_list_screen.dart';
+import '../features/shop/data/mock_shops.dart';
 import '../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
@@ -238,11 +254,82 @@ final GoRouter appRouter = GoRouter(
       path: '/admin/dashboard',
       builder: (context, state) => const AdminDashboardScreen(),
     ),
-    // Placeholder routes — akan ditambahkan saat fitur admin diimplementasikan:
-    // GoRoute(path: '/admin/orders', ...),
-    // GoRoute(path: '/admin/orders/:id', ...),
-    // GoRoute(path: '/admin/services', ...),
-    // GoRoute(path: '/admin/shop-profile', ...),
-    // GoRoute(path: '/admin/reports', ...),
+    GoRoute(
+      path: '/admin/orders',
+      builder: (context, state) => const AdminOrderListScreen(),
+    ),
+    GoRoute(
+      path: '/admin/orders/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return AdminOrderDetailScreen(orderId: id);
+      },
+    ),
+    GoRoute(
+      path: '/admin/services',
+      builder: (context, state) => const AdminServiceListScreen(),
+    ),
+    GoRoute(
+      path: '/admin/services/manage',
+      builder: (context, state) {
+        final service = state.extra as ServiceItem?;
+        return AdminAddEditServiceScreen(service: service);
+      },
+    ),
+    GoRoute(
+      path: '/admin/shop-profile',
+      builder: (context, state) => const AdminShopProfileScreen(),
+    ),
+    GoRoute(
+      path: '/admin/reports',
+      builder: (context, state) => const AdminReportScreen(),
+    ),
+    GoRoute(
+      path: '/admin/reviews',
+      builder: (context, state) => const AdminReviewListScreen(),
+    ),
+
+    // ─── Super Admin routes ──────────────────────────────────────
+    GoRoute(
+      path: '/superadmin/dashboard',
+      builder: (context, state) => const SuperAdminDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/superadmin/shops',
+      builder: (context, state) => const SuperAdminShopListScreen(),
+    ),
+    GoRoute(
+      path: '/superadmin/shops/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '1';
+        return SuperAdminShopDetailScreen(shopId: id);
+      },
+    ),
+    GoRoute(
+      path: '/superadmin/users',
+      builder: (context, state) => const SuperAdminUserListScreen(),
+    ),
+    GoRoute(
+      path: '/superadmin/users/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return SuperAdminUserDetailScreen(userId: id);
+      },
+    ),
+    GoRoute(
+      path: '/superadmin/payouts',
+      builder: (context, state) => const SuperAdminPayoutListScreen(),
+    ),
+    GoRoute(
+      path: '/superadmin/payouts/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return SuperAdminPayoutDetailScreen(payoutId: id);
+      },
+    ),
+    GoRoute(
+      path: '/superadmin/settings',
+      builder: (context, state) => const SuperAdminSettingsScreen(),
+    ),
   ],
 );

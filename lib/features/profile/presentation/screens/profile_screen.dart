@@ -74,6 +74,12 @@ class ProfileScreen extends StatelessWidget {
                 subtitle: 'Kelola pesanan, statistik, dan toko (Khusus Admin)',
                 onTap: () => context.push('/admin/dashboard'),
               ),
+              _ProfileMenuTile(
+                icon: Icons.security_rounded,
+                title: 'Super Admin Panel',
+                subtitle: 'Kelola mitra toko, verifikasi penarikan dana, pengaturan komisi (Khusus SA)',
+                onTap: () => context.push('/superadmin/dashboard'),
+              ),
             ],
           ),
         );
