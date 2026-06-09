@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../data/order_flow_manager.dart';
 
@@ -114,6 +116,63 @@ class OrderItemDetailCard extends StatelessWidget {
               ),
             ],
           ),
+          if (file.filePath != null && file.filePath!.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            const Divider(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  try {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Menyiapkan tautan berkas...'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                    
+                    final client = Supabase.instance.client;
+                    String cleanPath = file.filePath!;
+                    if (cleanPath.contains('order-files/')) {
+                      cleanPath = cleanPath.split('order-files/').last;
+                    }
+                    
+                    final signedUrl = await client.storage
+                        .from('order-files')
+                        .createSignedUrl(cleanPath, 300); // 5 mins
+
+                    final uri = Uri.parse(signedUrl);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    } else {
+                      throw Exception('Tidak dapat membuka tautan berkas.');
+                    }
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Gagal membuka berkas: $e'),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.open_in_new_rounded, size: 16),
+                label: const Text(
+                  'Buka Dokumen Asli',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark ? AppColors.teal800.withValues(alpha: 0.3) : const Color(0xFFE0F2F1),
+                  foregroundColor: isDark ? AppColors.teal300 : AppColors.teal700,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

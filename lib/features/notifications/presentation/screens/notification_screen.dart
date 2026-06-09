@@ -1,57 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
-import '../../data/notification_store.dart';
+import '../providers/notification_provider.dart';
 import '../widgets/notification_card.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends ConsumerWidget {
   const NotificationScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<List<GoPrintNotification>>(
-      valueListenable: notificationStore,
-      builder: (context, notifications, _) {
-        final unreadCount = notificationStore.unreadCount;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(notificationNotifierProvider);
+    final notifications = state.notifications;
+    final unreadCount = ref.watch(unreadNotificationsCountProvider);
+    final notifier = ref.read(notificationNotifierProvider.notifier);
 
-        return Scaffold(
-          appBar: CustomAppBar(
-            title: 'Notifikasi',
-            showBackButton: false,
-            actions: [
-              if (unreadCount > 0)
-                TextButton(
-                  onPressed: notificationStore.markAllAsRead,
-                  child: const Text(
-                    'Tandai Semua Dibaca',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
+    return Scaffold(
+      appBar: CustomAppBar(
+        title: 'Notifikasi',
+        showBackButton: false,
+        actions: [
+          if (unreadCount > 0)
+            TextButton(
+              onPressed: notifier.markAllAsRead,
+              child: const Text(
+                'Tandai Semua Dibaca',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+        ],
+      ),
+      body: state.isLoading && notifications.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: notifier.loadNotifications,
+              child: notifications.isEmpty
+                  ? const _EmptyNotificationState()
+                  : ListView(
+                      padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        _UnreadSummary(unreadCount: unreadCount),
+                        const SizedBox(height: 14),
+                        for (final notification in notifications)
+                          NotificationCard(
+                            key: ValueKey(notification.id),
+                            notification: notification,
+                            onMarkRead: () {
+                              notifier.markAsRead(notification.id);
+                            },
+                          ),
+                      ],
                     ),
-                  ),
-                ),
-            ],
-          ),
-          body: notifications.isEmpty
-              ? const _EmptyNotificationState()
-              : ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-                  children: [
-                    _UnreadSummary(unreadCount: unreadCount),
-                    const SizedBox(height: 14),
-                    for (final notification in notifications)
-                      NotificationCard(
-                        key: ValueKey(notification.id),
-                        notification: notification,
-                        onMarkRead: () {
-                          notificationStore.markAsRead(notification.id);
-                        },
-                      ),
-                  ],
-                ),
-        );
-      },
+            ),
     );
   }
 }

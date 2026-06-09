@@ -10,6 +10,7 @@ class ActiveOrderBanner extends StatelessWidget {
     required this.shopName,
     required this.statusText,
     required this.estimateText,
+    required this.orderId,
     this.statusColor,
     super.key,
   });
@@ -18,6 +19,7 @@ class ActiveOrderBanner extends StatelessWidget {
   final String shopName;
   final String statusText;
   final String estimateText;
+  final String orderId;
   final Color? statusColor;
 
   @override
@@ -32,8 +34,7 @@ class ActiveOrderBanner extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: InkWell(
         onTap: () {
-          // Navigate to order details (placeholder)
-          context.push('/orders/dummy_active');
+          context.push('/orders/$orderId');
         },
         borderRadius: BorderRadius.circular(16),
         child: Container(

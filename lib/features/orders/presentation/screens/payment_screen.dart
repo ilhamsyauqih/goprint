@@ -1,18 +1,23 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../data/order_flow_manager.dart';
 import '../widgets/payment_method_selector.dart';
 import '../widgets/payment_proof_uploader.dart';
+import '../../../../data/services/order_service.dart';
+import '../providers/order_provider.dart';
 
 /// Halaman Langkah 6: Konfirmasi & Pembayaran.
-class PaymentScreen extends StatefulWidget {
+class PaymentScreen extends ConsumerStatefulWidget {
   const PaymentScreen({super.key});
 
   @override
-  State<PaymentScreen> createState() => _PaymentScreenState();
+  ConsumerState<PaymentScreen> createState() => _PaymentScreenState();
 }
 
 class _PriceRow extends StatelessWidget {
@@ -50,7 +55,7 @@ class _PriceRow extends StatelessWidget {
   }
 }
 
-class _PaymentScreenState extends State<PaymentScreen> {
+class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   final OrderFlowManager _orderFlow = OrderFlowManager.instance;
   String _selectedMethod = 'QRIS';
   String? _uploadedProofPath;
@@ -59,7 +64,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return 'Rp ${value.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => "${m[1]}.")}';
   }
 
-  void _onPay() {
+  Future<void> _onPay() async {
     // Validasi: Jika Transfer Bank, wajib upload bukti transfer
     if (_selectedMethod == 'Transfer' && _uploadedProofPath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -71,13 +76,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       return;
     }
 
-    // Simpan data metode pembayaran
-    _orderFlow.paymentMethod = _selectedMethod;
-    _orderFlow.paymentProofPath = _uploadedProofPath;
-    _orderFlow.saveCurrentOrder();
-
-
-    // Tampilkan Loading Overlay tiruan sebelum sukses
+    // Tampilkan Loading Overlay
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -95,13 +94,156 @@ class _PaymentScreenState extends State<PaymentScreen> {
       },
     );
 
-    // Redirect setelah 1.5 detik ke Success Screen
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      if (mounted) {
-        Navigator.of(context).pop(); // Tutup loading
-        context.pushReplacement('/order/success');
+    try {
+      final client = Supabase.instance.client;
+      final currentUser = client.auth.currentUser;
+      if (currentUser == null) {
+        throw Exception('Silakan masuk terlebih dahulu.');
       }
-    });
+
+      // 1. Dapatkan atau seed shopId di database
+      final shopId = await _getOrSeedShopId();
+
+      // 2. Dapatkan services untuk toko tersebut di database
+      final servicesData = await client
+          .from('services')
+          .select()
+          .eq('shop_id', shopId)
+          .eq('is_active', true);
+      
+      if (servicesData.isEmpty) {
+        throw Exception('Tidak ada layanan aktif di toko ini.');
+      }
+
+      final bwService = servicesData.firstWhere(
+        (s) => s['name'].toString().toLowerCase().contains('hitam') || s['name'].toString().toLowerCase().contains('bw'),
+        orElse: () => servicesData.first,
+      );
+      final colorService = servicesData.firstWhere(
+        (s) => s['name'].toString().toLowerCase().contains('warna') || s['name'].toString().toLowerCase().contains('color'),
+        orElse: () => servicesData.first,
+      );
+
+      // 3. Konversi file di order flow ke OrderItemInput
+      final List<OrderItemInput> inputs = [];
+      for (final file in _orderFlow.uploadedFiles) {
+        final isColor = file.colorMode == 'Warna';
+        final chosenServiceId = isColor ? colorService['id'] as String : bwService['id'] as String;
+
+        // Jika user menggunakan mock file (bytes == null), kita buat mock bytes agar uploadOrderFile tidak error
+        final bytes = file.bytes ?? Uint8List.fromList([0, 1, 2, 3]);
+
+        inputs.add(OrderItemInput(
+          serviceId: chosenServiceId,
+          fileName: file.name,
+          pages: file.pageCount,
+          copies: file.copies,
+          colorMode: isColor ? 'color' : 'bw',
+          paperSize: file.paperSize,
+          finishing: file.finishing,
+          isDoubleSided: file.doubleSide,
+          bytes: bytes,
+        ));
+      }
+
+      // 4. Submit order ke database via OrderService
+      final orderId = await ref.read(orderServiceProvider).submitOrder(
+        userId: currentUser.id,
+        shopId: shopId,
+        deliveryType: _orderFlow.deliveryType,
+        paymentMethod: _selectedMethod,
+        note: _orderFlow.uploadedFiles.map((f) => '${f.name}: ${f.finishing}').join(', '),
+        inputs: inputs,
+        deliveryFee: _orderFlow.deliveryFee.toDouble(),
+      );
+
+      // 5. Jika metode pembayaran manual transfer bank, update payment_proof_url di order
+      if (_selectedMethod == 'Transfer' && _uploadedProofPath != null) {
+        await client.from('orders').update({
+          'payment_proof_url': _uploadedProofPath,
+          'payment_status': 'pending', // Menunggu Verifikasi
+          'status': 'pending',
+        }).eq('id', orderId);
+      } else {
+        // Otomatis verifikasi untuk QRIS (sesuai flow aplikasi)
+        await client.from('orders').update({
+          'payment_status': 'verified',
+          'status': 'confirmed',
+        }).eq('id', orderId);
+      }
+
+      // Simpan data metode pembayaran secara lokal
+      _orderFlow.paymentMethod = _selectedMethod;
+      _orderFlow.paymentProofPath = _uploadedProofPath;
+      _orderFlow.orderNumber = 'GP-${orderId.substring(0, 8).toUpperCase()}';
+      _orderFlow.saveCurrentOrder();
+
+      ref.invalidate(activeOrderProvider);
+      ref.invalidate(userOrdersProvider);
+
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Tutup loading
+
+      // Redirect ke Success Screen
+      context.pushReplacement('/order/success');
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Tutup loading
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal mengirim pesanan: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
+  Future<String> _getOrSeedShopId() async {
+    final client = Supabase.instance.client;
+    final list = await client.from('shops').select('id');
+    if (list.isNotEmpty) {
+      return list.first['id'] as String;
+    }
+
+    final currentUser = client.auth.currentUser;
+    if (currentUser == null) {
+      throw Exception('User tidak terautentikasi.');
+    }
+
+    // Seed Surya Gemilang
+    final shopData = await client.from('shops').insert({
+      'owner_id': currentUser.id,
+      'name': 'Fotokopi Surya Gemilang',
+      'description': 'Menerima jasa print dokumen harian, skripsi, jilid hard/soft cover kilat, laminating.',
+      'address': 'Jl. Kaliurang KM 5.2, Sleman, DI Yogyakarta',
+      'lat': -7.77,
+      'lng': 110.37,
+      'is_open': true,
+      'rating': 4.8,
+    }).select('id').single();
+
+    final newShopId = shopData['id'] as String;
+
+    await client.from('services').insert([
+      {
+        'shop_id': newShopId,
+        'name': 'Print Dokumen A4 (Hitam Putih)',
+        'type': 'print',
+        'base_price': 500,
+        'is_active': true,
+        'options': {},
+      },
+      {
+        'shop_id': newShopId,
+        'name': 'Print Warna A4 (High Quality)',
+        'type': 'print',
+        'base_price': 1500,
+        'is_active': true,
+        'options': {},
+      }
+    ]);
+
+    return newShopId;
   }
 
   @override

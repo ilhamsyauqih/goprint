@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../orders/data/order_flow_manager.dart';
+import '../../../orders/data/order_model.dart';
 import '../../../orders/presentation/widgets/status_badge.dart';
 
 /// Daftar pesanan terbaru dasbor admin (RecentOrderList) yang memuat status real-time.
 class RecentOrderList extends StatelessWidget {
-  const RecentOrderList({super.key});
+  final List<OrderModel> orders;
+
+  const RecentOrderList({required this.orders, super.key});
 
   String _formatCurrency(int value) {
     return 'Rp ${value.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => "${m[1]}.")}';
@@ -23,8 +25,6 @@ class RecentOrderList extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Mengambil data pesanan real-time dari singleton OrderFlowManager
-    final orders = OrderFlowManager.instance.orders;
     final recentOrders = orders.take(5).toList();
 
     return Container(

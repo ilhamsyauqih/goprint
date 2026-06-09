@@ -1,27 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
-import '../../../orders/data/order_flow_manager.dart';
 import '../../../orders/data/order_model.dart';
+import '../../../orders/data/order_flow_manager.dart';
 import '../../../orders/presentation/widgets/order_item_detail_card.dart';
 import '../../../orders/presentation/widgets/payment_info_section.dart';
 import '../widgets/customer_info_section.dart';
 import '../widgets/payment_verification_section.dart';
 import '../widgets/admin_action_buttons.dart';
 import '../widgets/internal_note_field.dart';
+import '../../../orders/presentation/providers/order_provider.dart';
+import '../../../shop/data/mock_shops.dart';
 
-class AdminOrderDetailScreen extends StatefulWidget {
+class AdminOrderDetailScreen extends ConsumerStatefulWidget {
   final String orderId;
 
   const AdminOrderDetailScreen({required this.orderId, super.key});
 
   @override
-  State<AdminOrderDetailScreen> createState() => _AdminOrderDetailScreenState();
+  ConsumerState<AdminOrderDetailScreen> createState() => _AdminOrderDetailScreenState();
 }
 
-class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
-  final OrderFlowManager _orderFlow = OrderFlowManager.instance;
+class _AdminOrderDetailScreenState extends ConsumerState<AdminOrderDetailScreen> {
   late OrderModel? _order;
+  String? _dbOrderId;
+  bool _isLoading = true;
+  String? _error;
 
   @override
   void initState() {
@@ -29,12 +35,149 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
     _loadOrder();
   }
 
-  void _loadOrder() {
-    final found = _orderFlow.orders.where((o) => o.orderNumber == widget.orderId).toList();
-    if (found.isNotEmpty) {
-      _order = found.first;
-    } else {
-      _order = null;
+  Future<void> _loadOrder() async {
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final client = Supabase.instance.client;
+      final cleanId = widget.orderId.replaceAll('GP-', '').toLowerCase();
+      final List data = await client
+          .from('orders')
+          .select('*, order_items(*), profiles(*), shops(*)');
+
+      Map<String, dynamic>? match;
+      for (final item in data) {
+        final idStr = (item['id'] as String).replaceAll('-', '').toLowerCase();
+        if (idStr.startsWith(cleanId)) {
+          match = item as Map<String, dynamic>;
+          break;
+        }
+      }
+
+      if (match == null) {
+        setState(() {
+          _order = null;
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final json = match;
+      final orderId = json['id'] as String;
+      _dbOrderId = orderId;
+      final shopJson = json['shops'] as Map?;
+      final profile = json['profiles'] as Map?;
+      
+      final shop = Shop(
+        id: shopJson?['id'] ?? '1',
+        name: shopJson?['name'] ?? 'Fotokopi Surya Gemilang',
+        imageUrl: shopJson?['photo_urls'] != null && (shopJson?['photo_urls'] as List).isNotEmpty 
+            ? (shopJson?['photo_urls'] as List).first 
+            : '',
+        rating: (shopJson?['rating'] as num?)?.toDouble() ?? 4.8,
+        distance: '0.0 km',
+        isOpen: shopJson?['is_open'] ?? true,
+        description: shopJson?['description'] ?? '',
+        address: shopJson?['address'] ?? '',
+        phone: '',
+        services: [],
+        reviews: [],
+        operatingHours: [],
+      );
+
+      final List itemsList = json['order_items'] as List? ?? [];
+      final List<UploadedFile> uploadedFiles = [];
+      for (final item in itemsList) {
+        final isColor = item['color_mode'] == 'color';
+        uploadedFiles.add(UploadedFile(
+          id: item['id'] as String,
+          name: item['file_name'] as String,
+          size: '1.2 MB',
+          pageCount: item['pages'] as int? ?? 1,
+          copies: item['copies'] as int? ?? 1,
+          colorMode: isColor ? 'Warna' : 'Hitam Putih',
+          paperSize: item['paper_size'] as String? ?? 'A4',
+          paperType: 'HVS 70g',
+          doubleSide: item['is_double_sided'] as bool? ?? false,
+          finishing: item['finishing'] as String? ?? 'Tanpa Jilid',
+          filePath: item['file_url'] as String,
+        ));
+      }
+
+      OrderStatus status = OrderStatus.pending;
+      switch (json['status']) {
+        case 'pending':
+          status = OrderStatus.pending;
+          break;
+        case 'confirmed':
+          status = OrderStatus.confirmed;
+          break;
+        case 'processing':
+          status = OrderStatus.processing;
+          break;
+        case 'ready':
+          status = OrderStatus.ready;
+          break;
+        case 'completed':
+          status = OrderStatus.completed;
+          break;
+        case 'cancelled':
+          status = OrderStatus.cancelled;
+          break;
+      }
+
+      String paymentStatus = 'Menunggu Verifikasi';
+      switch (json['payment_status']) {
+        case 'pending':
+          paymentStatus = 'Menunggu Verifikasi';
+          break;
+        case 'verified':
+          paymentStatus = 'Terverifikasi';
+          break;
+        case 'rejected':
+          paymentStatus = 'Gagal';
+          break;
+      }
+
+      // Generate signed URL untuk payment proof jika ada
+      String? signedProofUrl = json['payment_proof_url'] as String?;
+      if (signedProofUrl != null && signedProofUrl.isNotEmpty && !signedProofUrl.startsWith('http')) {
+        try {
+          signedProofUrl = await client.storage
+              .from('payment-proofs')
+              .createSignedUrl(signedProofUrl, 3600);
+        } catch (_) {}
+      }
+
+      setState(() {
+        _order = OrderModel(
+          orderNumber: widget.orderId,
+          shop: shop,
+          uploadedFiles: uploadedFiles,
+          deliveryType: json['delivery_type'] ?? 'pickup',
+          deliveryAddress: json['note'],
+          deliveryFee: (json['delivery_fee'] as num?)?.toInt() ?? 0,
+          paymentMethod: json['payment_method'] ?? 'QRIS',
+          paymentProofPath: signedProofUrl,
+          paymentStatus: paymentStatus,
+          status: status,
+          date: DateTime.parse(json['created_at'] as String),
+          totalFee: (json['total_price'] as num?)?.toInt() ?? 0,
+          customerName: profile?['name'] ?? 'Pelanggan',
+          customerPhone: profile?['phone'] ?? '+6281234567890',
+        );
+        _dbOrderId = orderId;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
     }
   }
 
@@ -42,6 +185,52 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        appBar: CustomAppBar(
+          title: 'Kelola ${widget.orderId}',
+          showBackButton: true,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_error != null) {
+      return Scaffold(
+        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        appBar: CustomAppBar(
+          title: 'Kelola ${widget.orderId}',
+          showBackButton: true,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline_rounded, size: 64, color: AppColors.error),
+              const SizedBox(height: 16),
+              Text(
+                'Terjadi Kesalahan',
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _error!,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isDark ? AppColors.darkMutedText : AppColors.lightSubtleText,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _loadOrder,
+                child: const Text('Coba Lagi'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     if (_order == null) {
       return Scaffold(
@@ -128,13 +317,46 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                   // Payment Verification Section (Approve / Reject verification)
                   PaymentVerificationSection(
                     order: order,
-                    onUpdate: () => setState(() {}),
+                    onUpdate: () async {
+                      final client = Supabase.instance.client;
+                      String dbPaymentStatus = 'pending';
+                      if (order.paymentStatus == 'Terverifikasi') dbPaymentStatus = 'verified';
+                      if (order.paymentStatus == 'Gagal') dbPaymentStatus = 'rejected';
+
+                      String dbStatus = 'pending';
+                      switch (order.status) {
+                        case OrderStatus.pending: dbStatus = 'pending'; break;
+                        case OrderStatus.confirmed: dbStatus = 'confirmed'; break;
+                        case OrderStatus.processing: dbStatus = 'processing'; break;
+                        case OrderStatus.ready: dbStatus = 'ready'; break;
+                        case OrderStatus.completed: dbStatus = 'completed'; break;
+                        case OrderStatus.cancelled: dbStatus = 'cancelled'; break;
+                      }
+
+                      await client.from('orders').update({
+                        'payment_status': dbPaymentStatus,
+                        'status': dbStatus,
+                      }).eq('id', _dbOrderId!);
+
+                      await _loadOrder();
+                      ref.invalidate(adminOrdersProvider);
+                      ref.invalidate(activeOrderProvider);
+                      ref.invalidate(userOrdersProvider);
+                    },
                   ),
 
                   // Internal Notes Field Section
                   InternalNoteField(
                     order: order,
-                    onSaved: () => setState(() {}),
+                    onSaved: () async {
+                      if (order.internalNote != null) {
+                        final client = Supabase.instance.client;
+                        await client.from('orders').update({
+                          'note': order.internalNote,
+                        }).eq('id', _dbOrderId!);
+                      }
+                      await _loadOrder();
+                    },
                   ),
 
                   // Document List Section
@@ -179,10 +401,32 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
               top: false,
               child: AdminActionButtons(
                 order: order,
-                onUpdate: () {
-                  setState(() {
-                    _loadOrder(); // Reload the state
-                  });
+                onUpdate: () async {
+                  final client = Supabase.instance.client;
+
+                  String dbStatus = 'pending';
+                  switch (order.status) {
+                    case OrderStatus.pending: dbStatus = 'pending'; break;
+                    case OrderStatus.confirmed: dbStatus = 'confirmed'; break;
+                    case OrderStatus.processing: dbStatus = 'processing'; break;
+                    case OrderStatus.ready: dbStatus = 'ready'; break;
+                    case OrderStatus.completed: dbStatus = 'completed'; break;
+                    case OrderStatus.cancelled: dbStatus = 'cancelled'; break;
+                  }
+
+                  String dbPaymentStatus = 'pending';
+                  if (order.paymentStatus == 'Terverifikasi') dbPaymentStatus = 'verified';
+                  if (order.paymentStatus == 'Gagal') dbPaymentStatus = 'rejected';
+
+                  await client.from('orders').update({
+                    'status': dbStatus,
+                    'payment_status': dbPaymentStatus,
+                  }).eq('id', _dbOrderId!);
+
+                  await _loadOrder();
+                  ref.invalidate(adminOrdersProvider);
+                  ref.invalidate(activeOrderProvider);
+                  ref.invalidate(userOrdersProvider);
                 },
               ),
             ),

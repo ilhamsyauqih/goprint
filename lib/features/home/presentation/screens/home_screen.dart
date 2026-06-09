@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/section_header.dart';
+import '../../../notifications/presentation/providers/notification_provider.dart';
+import '../../../orders/presentation/providers/order_provider.dart';
+import '../../../profile/presentation/providers/profile_provider.dart';
 import '../widgets/active_order_banner.dart';
 import '../widgets/greeting_header.dart';
 import '../widgets/home_search_bar.dart';
@@ -12,12 +16,17 @@ import '../widgets/service_category_grid.dart';
 import '../widgets/template_recommend_grid.dart';
 
 /// Halaman utama (Home Screen) aplikasi GoPrint.
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    final profileState = ref.watch(profileNotifierProvider);
+    final userName = profileState.user?.name ?? 'Pengguna';
+    final unreadCount = ref.watch(unreadNotificationsCountProvider);
+    final activeOrderAsync = ref.watch(activeOrderProvider);
 
     return Scaffold(
       body: CustomScrollView(
@@ -25,8 +34,7 @@ class HomeScreen extends StatelessWidget {
           // ─── App Bar & Header ─────────────────────────────────────
           SliverAppBar(
             expandedHeight: 140,
-            toolbarHeight:
-                0, // Menghilangkan area kosong di atas search bar saat di-scroll
+            toolbarHeight: 0, // Menghilangkan area kosong di atas search bar saat di-scroll
             floating: false,
             pinned: true,
             elevation: 0,
@@ -42,8 +50,8 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       GreetingHeader(
-                        name: 'Ilham',
-                        unreadNotifications: 3,
+                        name: userName,
+                        unreadNotifications: unreadCount,
                         onNotificationTap: () => context.go('/notifications'),
                       ),
                     ],
@@ -68,11 +76,51 @@ class HomeScreen extends StatelessWidget {
           // ─── Main Content (SliverList) ────────────────────────────
           SliverList(
             delegate: SliverChildListDelegate([
-              const ActiveOrderBanner(
-                orderNumber: '#GP-1092',
-                shopName: 'Fotokopi Surya Gemilang',
-                statusText: 'Diproses',
-                estimateText: 'Selesai pukul 14:30',
+              activeOrderAsync.when(
+                data: (activeOrder) {
+                  if (activeOrder == null) return const SizedBox.shrink();
+
+                  final orderId = activeOrder['id'] as String;
+                  final status = activeOrder['status'] as String;
+                  final shopName = (activeOrder['shops'] as Map?)?['name'] as String? ?? 'Toko';
+
+                  String statusText = 'Diproses';
+                  String estimateText = 'Sedang diproses oleh toko';
+
+                  switch (status) {
+                    case 'pending':
+                      statusText = 'Menunggu';
+                      estimateText = 'Menunggu konfirmasi toko';
+                      break;
+                    case 'confirmed':
+                      statusText = 'Dikonfirmasi';
+                      estimateText = 'Pesanan dikonfirmasi';
+                      break;
+                    case 'processing':
+                      statusText = 'Diproses';
+                      estimateText = 'Sedang dikerjakan';
+                      break;
+                    case 'ready':
+                      statusText = 'Siap';
+                      estimateText = 'Siap diambil/dikirim';
+                      break;
+                  }
+
+                  return ActiveOrderBanner(
+                    orderNumber: '#${orderId.substring(0, 8).toUpperCase()}',
+                    shopName: shopName,
+                    statusText: statusText,
+                    estimateText: estimateText,
+                    orderId: orderId,
+                  );
+                },
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                error: (e, _) => const SizedBox.shrink(),
               ),
               const SizedBox(height: 12),
               const PromoBanner(),
