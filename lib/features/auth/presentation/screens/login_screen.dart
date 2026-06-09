@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/validators.dart';
+import '../../../../data/repositories/auth_repository_impl.dart';
 import '../../../../shared/widgets/primary_button.dart';
 import '../widgets/auth_scaffold.dart';
 import '../widgets/auth_switch_prompt.dart';
 import '../widgets/auth_text_field.dart';
 
-class LoginScreen extends StatefulWidget {
+// Gunakan ConsumerStatefulWidget agar bisa mengakses Riverpod provider
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -28,21 +31,32 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
-    await Future<void>.delayed(const Duration(milliseconds: 850));
-    if (!mounted) {
-      return;
-    }
 
-    setState(() => _isLoading = false);
+    try {
+      // Panggil Supabase signIn via authRepositoryProvider
+      final authRepo = ref.read(authRepositoryProvider);
+      await authRepo.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
 
-    // Navigate to main layout after successful login
-    if (mounted) {
+      if (!mounted) return;
+
+      // Navigate ke halaman utama setelah login berhasil
       context.go('/home');
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login gagal: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 

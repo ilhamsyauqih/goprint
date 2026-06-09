@@ -1,89 +1,105 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
-import '../../data/profile_store.dart';
+import '../providers/profile_provider.dart';
 import '../widgets/avatar_picker.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final subtitleColor = isDark
         ? AppColors.darkMutedText
         : AppColors.lightSubtleText;
 
-    return AnimatedBuilder(
-      animation: profileStore,
-      builder: (context, _) {
-        final profile = profileStore.profile;
+    final profileState = ref.watch(profileNotifierProvider);
+    final user = profileState.user;
+    final defaultAddress = profileState.defaultAddress;
 
-        return Scaffold(
-          appBar: const CustomAppBar(title: 'Profil', showBackButton: false),
-          body: ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              _ProfileHeader(name: profile.name, subtitleColor: subtitleColor),
-              const SizedBox(height: 20),
-              _ProfileInfoTile(
-                icon: Icons.mail_outline_rounded,
-                label: 'Email',
-                value: profile.email,
-              ),
-              _ProfileInfoTile(
-                icon: Icons.phone_android_rounded,
-                label: 'Nomor HP',
-                value: profile.phone,
-              ),
-              _ProfileInfoTile(
-                icon: Icons.home_work_outlined,
-                label: 'Alamat Utama',
-                value: profile.primaryAddress,
-              ),
-              const SizedBox(height: 16),
-              _ProfileMenuTile(
-                icon: Icons.edit_rounded,
-                title: 'Edit Profil',
-                subtitle: 'Nama, nomor HP, dan alamat kos',
-                onTap: () => context.push('/profile/edit'),
-              ),
-              _ProfileMenuTile(
-                icon: Icons.location_on_outlined,
-                title: 'Alamat Tersimpan',
-                subtitle: 'Tambah, hapus, dan pilih alamat default',
-                onTap: () => context.push('/profile/addresses'),
-              ),
-              _ProfileMenuTile(
-                icon: Icons.lock_outline_rounded,
-                title: 'Ubah Password',
-                subtitle: 'Ganti password akun GoPrint',
-                onTap: () => context.push('/profile/change-password'),
-              ),
-              _ProfileMenuTile(
-                icon: Icons.settings_outlined,
-                title: 'Pengaturan',
-                subtitle: 'Notifikasi, tema, tentang app, logout',
-                onTap: () => context.push('/profile/settings'),
-              ),
+    if (profileState.isLoading && user == null) {
+      return const Scaffold(
+        appBar: CustomAppBar(title: 'Profil', showBackButton: false),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final email = Supabase.instance.client.auth.currentUser?.email ?? '';
+    final name = user?.name ?? 'Pengguna';
+    final phone = user?.phone ?? '-';
+    final primaryAddress = defaultAddress?.fullAddress ?? 'Belum ada alamat utama';
+
+    return Scaffold(
+      appBar: const CustomAppBar(title: 'Profil', showBackButton: false),
+      body: RefreshIndicator(
+        onRefresh: () => ref.read(profileNotifierProvider.notifier).loadProfile(),
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            _ProfileHeader(name: name, subtitleColor: subtitleColor),
+            const SizedBox(height: 20),
+            _ProfileInfoTile(
+              icon: Icons.mail_outline_rounded,
+              label: 'Email',
+              value: email,
+            ),
+            _ProfileInfoTile(
+              icon: Icons.phone_android_rounded,
+              label: 'Nomor HP',
+              value: phone,
+            ),
+            _ProfileInfoTile(
+              icon: Icons.home_work_outlined,
+              label: 'Alamat Utama',
+              value: primaryAddress,
+            ),
+            const SizedBox(height: 16),
+            _ProfileMenuTile(
+              icon: Icons.edit_rounded,
+              title: 'Edit Profil',
+              subtitle: 'Nama, nomor HP, dan alamat kos',
+              onTap: () => context.push('/profile/edit'),
+            ),
+            _ProfileMenuTile(
+              icon: Icons.location_on_outlined,
+              title: 'Alamat Tersimpan',
+              subtitle: 'Tambah, hapus, dan pilih alamat default',
+              onTap: () => context.push('/profile/addresses'),
+            ),
+            _ProfileMenuTile(
+              icon: Icons.lock_outline_rounded,
+              title: 'Ubah Password',
+              subtitle: 'Ganti password akun GoPrint',
+              onTap: () => context.push('/profile/change-password'),
+            ),
+            _ProfileMenuTile(
+              icon: Icons.settings_outlined,
+              title: 'Pengaturan',
+              subtitle: 'Notifikasi, tema, tentang app, logout',
+              onTap: () => context.push('/profile/settings'),
+            ),
+            if (user?.role == 'admin')
               _ProfileMenuTile(
                 icon: Icons.admin_panel_settings_rounded,
                 title: 'Dashboard Admin',
                 subtitle: 'Kelola pesanan, statistik, dan toko (Khusus Admin)',
                 onTap: () => context.push('/admin/dashboard'),
               ),
+            if (user?.role == 'superadmin')
               _ProfileMenuTile(
-                icon: Icons.security_rounded,
-                title: 'Super Admin Panel',
-                subtitle: 'Kelola mitra toko, verifikasi penarikan dana, pengaturan komisi (Khusus SA)',
+                icon: Icons.admin_panel_settings_rounded,
+                title: 'Dashboard Super Admin',
+                subtitle: 'Kelola sistem, penarikan dana, toko, dan pengguna',
                 onTap: () => context.push('/superadmin/dashboard'),
               ),
-            ],
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

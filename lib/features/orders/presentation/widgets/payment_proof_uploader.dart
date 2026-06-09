@@ -1,3 +1,5 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 
@@ -19,26 +21,63 @@ class PaymentProofUploader extends StatefulWidget {
 class _PaymentProofUploaderState extends State<PaymentProofUploader> {
   bool _isUploading = false;
 
-  void _simulateUpload() {
-    setState(() {
-      _isUploading = true;
-    });
+  Future<void> _pickAndUploadProof() async {
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.image,
+        withData: true,
+      );
 
-    // Simulasikan delay upload
-    Future.delayed(const Duration(milliseconds: 1200), () {
-      if (mounted) {
+      if (result != null && result.files.isNotEmpty) {
+        setState(() {
+          _isUploading = true;
+        });
+
+        final pickedFile = result.files.single;
+        final bytes = pickedFile.bytes;
+        if (bytes == null) {
+          throw Exception('Gagal membaca data berkas.');
+        }
+
+        final currentUser = Supabase.instance.client.auth.currentUser;
+        if (currentUser == null) {
+          throw Exception('Pengguna tidak masuk.');
+        }
+
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final cleanFileName = pickedFile.name.replaceAll(RegExp(r'[^a-zA-Z0-9.]'), '_');
+        final path = '${currentUser.id}/${timestamp}_$cleanFileName';
+
+        await Supabase.instance.client.storage
+            .from('payment-proofs')
+            .uploadBinary(path, bytes);
+
         setState(() {
           _isUploading = false;
         });
-        widget.onProofChanged('bukti_transfer_success_${DateTime.now().millisecondsSinceEpoch % 1000}.png');
+
+        widget.onProofChanged(path);
+
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Bukti transfer berhasil diunggah!'),
-            duration: Duration(seconds: 1),
+            backgroundColor: Colors.green,
           ),
         );
       }
-    });
+    } catch (e) {
+      setState(() {
+        _isUploading = false;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal mengunggah bukti: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
   }
 
   void _removeProof() {
@@ -72,7 +111,7 @@ class _PaymentProofUploaderState extends State<PaymentProofUploader> {
         if (widget.uploadedPath == null)
           // Tampilan Belum Upload / Sedang Upload
           GestureDetector(
-            onTap: _isUploading ? null : _simulateUpload,
+            onTap: _isUploading ? null : _pickAndUploadProof,
             child: Container(
               height: 140,
               width: double.infinity,

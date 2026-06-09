@@ -1,41 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
-import '../../data/profile_store.dart';
+import '../providers/profile_provider.dart';
 
-class AddressListScreen extends StatelessWidget {
+class AddressListScreen extends ConsumerWidget {
   const AddressListScreen({super.key});
 
-  Future<void> _addAddress(BuildContext context) async {
-    final result = await context.push<UserAddress>('/profile/addresses/add');
-    if (result == null || !context.mounted) {
-      return;
-    }
-
-    profileStore.addAddress(result);
+  void _addAddress(BuildContext context) {
+    context.push('/profile/addresses/add');
   }
 
   @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: profileStore,
-      builder: (context, _) {
-        final addresses = profileStore.addresses;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileState = ref.watch(profileNotifierProvider);
+    final addresses = profileState.addresses;
+    final notifier = ref.read(profileNotifierProvider.notifier);
 
-        return Scaffold(
-          appBar: CustomAppBar(
-            title: 'Alamat Tersimpan',
-            actions: [
-              IconButton(
-                tooltip: 'Tambah alamat',
-                onPressed: () => _addAddress(context),
-                icon: const Icon(Icons.add_rounded, color: Colors.white),
-              ),
-            ],
+    return Scaffold(
+      appBar: CustomAppBar(
+        title: 'Alamat Tersimpan',
+        actions: [
+          IconButton(
+            tooltip: 'Tambah alamat',
+            onPressed: () => _addAddress(context),
+            icon: const Icon(Icons.add_rounded, color: Colors.white),
           ),
-          body: addresses.isEmpty
+        ],
+      ),
+      body: profileState.isLoading && addresses.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : addresses.isEmpty
               ? const _EmptyAddressState()
               : ListView.builder(
                   padding: const EdgeInsets.all(20),
@@ -54,16 +51,16 @@ class AddressListScreen extends StatelessWidget {
                               : AppColors.teal700,
                         ),
                         title: Text(
-                          address.title,
+                          address.label,
                           style: const TextStyle(fontWeight: FontWeight.w800),
                         ),
-                        subtitle: Text(address.detail),
+                        subtitle: Text(address.fullAddress),
                         trailing: PopupMenuButton<String>(
                           onSelected: (value) {
                             if (value == 'default') {
-                              profileStore.setDefaultAddress(index);
+                              notifier.setDefaultAddress(address.id);
                             } else if (value == 'delete') {
-                              profileStore.deleteAddress(index);
+                              notifier.deleteAddress(address.id);
                             }
                           },
                           itemBuilder: (context) => [
@@ -87,8 +84,6 @@ class AddressListScreen extends StatelessWidget {
             label: const Text('Tambah'),
           ),
         );
-      },
-    );
   }
 }
 

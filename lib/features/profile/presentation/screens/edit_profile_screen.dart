@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/validators.dart';
 import '../../../../features/auth/presentation/widgets/auth_text_field.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/primary_button.dart';
-import '../../data/profile_store.dart';
+import '../providers/profile_provider.dart';
 import '../widgets/avatar_picker.dart';
 
-class EditProfileScreen extends StatefulWidget {
+class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
+  ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _phoneController;
@@ -24,10 +26,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final profile = profileStore.profile;
-    _nameController = TextEditingController(text: profile.name);
-    _phoneController = TextEditingController(text: profile.phone);
-    _addressController = TextEditingController(text: profile.primaryAddress);
+    final profile = ref.read(profileNotifierProvider);
+    _nameController = TextEditingController(text: profile.user?.name ?? '');
+    _phoneController = TextEditingController(text: profile.user?.phone ?? '');
+    _addressController = TextEditingController(text: profile.defaultAddress?.fullAddress ?? '');
   }
 
   @override
@@ -44,21 +46,52 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     setState(() => _isSaving = true);
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    if (!mounted) {
-      return;
+    
+    try {
+      final notifier = ref.read(profileNotifierProvider.notifier);
+      final profileState = ref.read(profileNotifierProvider);
+      
+      // Update name & phone in public.profiles
+      await notifier.updateProfile(
+        name: _nameController.text.trim(),
+        phone: _phoneController.text.trim(),
+      );
+
+      final addressText = _addressController.text.trim();
+      
+      // Update default address if exists, otherwise create it
+      if (profileState.defaultAddress != null && profileState.defaultAddress!.id.isNotEmpty) {
+        await notifier.updateAddress(
+          addressId: profileState.defaultAddress!.id,
+          label: profileState.defaultAddress!.label,
+          fullAddress: addressText,
+          isDefault: true,
+        );
+      } else {
+        await notifier.addAddress(
+          label: 'Utama',
+          fullAddress: addressText,
+          isDefault: true,
+        );
+      }
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profil berhasil diperbarui')),
+      );
+      context.pop();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal memperbarui profil: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
-
-    profileStore.updateProfile(
-      name: _nameController.text.trim(),
-      phone: _phoneController.text.trim(),
-      primaryAddress: _addressController.text.trim(),
-    );
-
-    setState(() => _isSaving = false);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Profil berhasil diperbarui')));
   }
 
   @override

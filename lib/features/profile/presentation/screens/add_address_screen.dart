@@ -5,19 +5,21 @@ import '../../../../core/utils/validators.dart';
 import '../../../../features/auth/presentation/widgets/auth_text_field.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/primary_button.dart';
-import '../../data/profile_store.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/profile_provider.dart';
 
-class AddAddressScreen extends StatefulWidget {
+class AddAddressScreen extends ConsumerStatefulWidget {
   const AddAddressScreen({super.key});
 
   @override
-  State<AddAddressScreen> createState() => _AddAddressScreenState();
+  ConsumerState<AddAddressScreen> createState() => _AddAddressScreenState();
 }
 
-class _AddAddressScreenState extends State<AddAddressScreen> {
+class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _detailController = TextEditingController();
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -26,18 +28,32 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     super.dispose();
   }
 
-  void _save() {
+  Future<void> _save() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    context.pop(
-      UserAddress(
-        title: _titleController.text.trim(),
-        detail: _detailController.text.trim(),
-        isDefault: false,
-      ),
-    );
+    setState(() => _isSaving = true);
+
+    try {
+      await ref.read(profileNotifierProvider.notifier).addAddress(
+            label: _titleController.text.trim(),
+            fullAddress: _detailController.text.trim(),
+            isDefault: false,
+          );
+      if (!mounted) return;
+      context.pop();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal menambahkan alamat: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   @override
@@ -67,7 +83,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
               validator: AuthValidators.requiredField,
             ),
             const SizedBox(height: 28),
-            PrimaryButton(label: 'Simpan Alamat', onPressed: _save),
+            PrimaryButton(
+              label: 'Simpan Alamat',
+              onPressed: _save,
+              isLoading: _isSaving,
+            ),
           ],
         ),
       ),

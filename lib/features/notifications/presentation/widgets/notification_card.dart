@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../data/notification_store.dart';
+import '../../../../data/models/notification_model.dart';
 
 class NotificationCard extends StatelessWidget {
   const NotificationCard({
@@ -10,38 +10,97 @@ class NotificationCard extends StatelessWidget {
     super.key,
   });
 
-  final GoPrintNotification notification;
+  final NotificationModel notification;
   final VoidCallback onMarkRead;
 
   Color _typeColor(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return switch (notification.type) {
-      NotificationType.order => isDark ? AppColors.teal300 : AppColors.teal700,
-      NotificationType.payment =>
-        isDark ? AppColors.successDark : AppColors.success,
-      NotificationType.promo =>
-        isDark ? AppColors.warningDark : AppColors.warning,
-      NotificationType.system => isDark ? AppColors.infoDark : AppColors.info,
-    };
+    switch (notification.type) {
+      case 'order_new':
+      case 'order_update':
+      case 'order_confirmed':
+      case 'order_processing':
+      case 'order_ready':
+      case 'order_completed':
+      case 'order_cancelled':
+      case 'order':
+        return isDark ? AppColors.teal300 : AppColors.teal700;
+      case 'payment':
+      case 'payment_proof_uploaded':
+      case 'payment_verified':
+      case 'payment_rejected':
+        return isDark ? AppColors.successDark : AppColors.success;
+      case 'promo':
+        return isDark ? AppColors.warningDark : AppColors.warning;
+      case 'system':
+      default:
+        return isDark ? AppColors.infoDark : AppColors.info;
+    }
   }
 
   IconData get _typeIcon {
-    return switch (notification.type) {
-      NotificationType.order => Icons.receipt_long_rounded,
-      NotificationType.payment => Icons.payments_outlined,
-      NotificationType.promo => Icons.local_offer_outlined,
-      NotificationType.system => Icons.settings_suggest_outlined,
-    };
+    switch (notification.type) {
+      case 'order_new':
+      case 'order_update':
+      case 'order_confirmed':
+      case 'order_processing':
+      case 'order_ready':
+      case 'order_completed':
+      case 'order_cancelled':
+      case 'order':
+        return Icons.receipt_long_rounded;
+      case 'payment':
+      case 'payment_proof_uploaded':
+      case 'payment_verified':
+      case 'payment_rejected':
+        return Icons.payments_outlined;
+      case 'promo':
+        return Icons.local_offer_outlined;
+      case 'system':
+      default:
+        return Icons.settings_suggest_outlined;
+    }
   }
 
   String get _typeLabel {
-    return switch (notification.type) {
-      NotificationType.order => 'Pesanan',
-      NotificationType.payment => 'Pembayaran',
-      NotificationType.promo => 'Promo',
-      NotificationType.system => 'Sistem',
-    };
+    switch (notification.type) {
+      case 'order_new':
+        return 'Pesanan Baru';
+      case 'order_update':
+      case 'order_confirmed':
+      case 'order_processing':
+      case 'order_ready':
+      case 'order_completed':
+      case 'order_cancelled':
+      case 'order':
+        return 'Pesanan';
+      case 'payment':
+      case 'payment_proof_uploaded':
+      case 'payment_verified':
+      case 'payment_rejected':
+        return 'Pembayaran';
+      case 'promo':
+        return 'Promo';
+      case 'system':
+      default:
+        return 'Sistem';
+    }
+  }
+
+  String get _timeLabel {
+    final difference = DateTime.now().difference(notification.createdAt);
+    if (difference.inMinutes < 1) {
+      return 'Baru saja';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} menit lalu';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} jam lalu';
+    } else if (difference.inDays == 1) {
+      return 'Kemarin';
+    } else {
+      return '${notification.createdAt.day}/${notification.createdAt.month}/${notification.createdAt.year}';
+    }
   }
 
   @override
@@ -156,7 +215,7 @@ class NotificationCard extends StatelessWidget {
                           ),
                           const Spacer(),
                           Text(
-                            notification.timeLabel,
+                            _timeLabel,
                             style: Theme.of(context).textTheme.labelMedium
                                 ?.copyWith(color: mutedColor),
                           ),

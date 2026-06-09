@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
-import '../../../orders/data/order_flow_manager.dart';
 import '../../../orders/data/order_model.dart';
 import '../widgets/admin_drawer.dart';
 import '../widgets/admin_order_card.dart';
+import '../../../orders/presentation/providers/order_provider.dart';
 
-class AdminOrderListScreen extends StatefulWidget {
+class AdminOrderListScreen extends ConsumerStatefulWidget {
   const AdminOrderListScreen({super.key});
 
   @override
-  State<AdminOrderListScreen> createState() => _AdminOrderListScreenState();
+  ConsumerState<AdminOrderListScreen> createState() => _AdminOrderListScreenState();
 }
 
-class _AdminOrderListScreenState extends State<AdminOrderListScreen> {
-  final OrderFlowManager _orderFlow = OrderFlowManager.instance;
-
+class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> {
   String _searchQuery = '';
   String _sortBy = 'Terbaru'; // 'Terbaru' | 'Terlama' | 'Terbesar' | 'Terkecil'
   final TextEditingController _searchController = TextEditingController();
@@ -74,161 +73,199 @@ class _AdminOrderListScreenState extends State<AdminOrderListScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final allOrders = _orderFlow.orders;
+    final adminOrdersAsync = ref.watch(adminOrdersProvider);
 
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
+    return adminOrdersAsync.when(
+      data: (allOrders) {
+        return DefaultTabController(
+          length: 4,
+          child: Scaffold(
+            backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+            drawer: const AdminDrawer(currentRoute: '/admin/orders'),
+            appBar: CustomAppBar(
+              title: 'Pesanan Masuk',
+              showBackButton: false,
+              leading: Builder(
+                builder: (context) => IconButton(
+                  icon: const Icon(Icons.menu_rounded, color: Colors.white),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                ),
+              ),
+              bottom: TabBar(
+                isScrollable: true,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white.withValues(alpha: 0.65),
+                indicatorColor: isDark ? AppColors.teal300 : AppColors.teal200,
+                indicatorWeight: 3.0,
+                tabAlignment: TabAlignment.start,
+                labelStyle: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+                unselectedLabelStyle: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+                tabs: const [
+                  Tab(text: 'Semua'),
+                  Tab(text: 'Baru'),
+                  Tab(text: 'Diproses/Ready'),
+                  Tab(text: 'Selesai/Batal'),
+                ],
+              ),
+            ),
+            body: RefreshIndicator(
+              onRefresh: () => ref.refresh(adminOrdersProvider.future),
+              child: Column(
+                children: [
+                  // Search & Sort bar
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                    child: Row(
+                      children: [
+                        // Search Field
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (value) {
+                              setState(() {
+                                _searchQuery = value.trim();
+                              });
+                            },
+                            style: const TextStyle(fontSize: 14),
+                            decoration: InputDecoration(
+                              hintText: 'Cari nomor, pemesan, dokumen...',
+                              hintStyle: TextStyle(
+                                fontSize: 13,
+                                color: isDark ? AppColors.darkMutedText : AppColors.lightSubtleText,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.search_rounded,
+                                size: 20,
+                                color: isDark ? AppColors.darkMutedText : AppColors.lightSubtleText,
+                              ),
+                              suffixIcon: _searchQuery.isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(Icons.clear_rounded, size: 18),
+                                      onPressed: () {
+                                        setState(() {
+                                          _searchController.clear();
+                                          _searchQuery = '';
+                                        });
+                                      },
+                                    )
+                                  : null,
+                              filled: true,
+                              fillColor: isDark ? AppColors.darkSurface : Colors.white,
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: isDark ? AppColors.teal300 : AppColors.teal700,
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Sort Button
+                        PopupMenuButton<String>(
+                          onSelected: (value) {
+                            setState(() {
+                              _sortBy = value;
+                            });
+                          },
+                          icon: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: isDark ? AppColors.darkSurface : Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.filter_list_rounded,
+                              color: isDark ? AppColors.teal300 : AppColors.teal700,
+                              size: 20,
+                            ),
+                          ),
+                          tooltip: 'Urutkan Pesanan',
+                          itemBuilder: (context) => [
+                            _buildSortMenuItem('Terbaru', 'Tanggal: Terbaru'),
+                            _buildSortMenuItem('Terlama', 'Tanggal: Terlama'),
+                            _buildSortMenuItem('Terbesar', 'Total: Terbesar'),
+                            _buildSortMenuItem('Terkecil', 'Total: Terkecil'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+      
+                  // Tabs Content
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        _buildTabList(allOrders, 'Semua', theme, isDark),
+                        _buildTabList(allOrders, 'Baru', theme, isDark),
+                        _buildTabList(allOrders, 'Diproses', theme, isDark),
+                        _buildTabList(allOrders, 'Selesai/Batal', theme, isDark),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+      loading: () => Scaffold(
         backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
         drawer: const AdminDrawer(currentRoute: '/admin/orders'),
-        appBar: CustomAppBar(
-          title: 'Pesanan Masuk',
-          showBackButton: false,
-          leading: Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu_rounded, color: Colors.white),
-              onPressed: () => Scaffold.of(context).openDrawer(),
+        appBar: const CustomAppBar(title: 'Pesanan Masuk', showBackButton: false),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        drawer: const AdminDrawer(currentRoute: '/admin/orders'),
+        appBar: const CustomAppBar(title: 'Pesanan Masuk', showBackButton: false),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 48),
+                const SizedBox(height: 16),
+                Text('Gagal memuat pesanan: $e', textAlign: TextAlign.center),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => ref.refresh(adminOrdersProvider),
+                  child: const Text('Coba Lagi'),
+                ),
+              ],
             ),
           ),
-          bottom: TabBar(
-            isScrollable: true,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white.withValues(alpha: 0.65),
-            indicatorColor: isDark ? AppColors.teal300 : AppColors.teal200,
-            indicatorWeight: 3.0,
-            tabAlignment: TabAlignment.start,
-            labelStyle: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-            unselectedLabelStyle: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-            ),
-            tabs: const [
-              Tab(text: 'Semua'),
-              Tab(text: 'Baru'),
-              Tab(text: 'Diproses/Ready'),
-              Tab(text: 'Selesai/Batal'),
-            ],
-          ),
-        ),
-        body: Column(
-          children: [
-            // Search & Sort bar
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-              child: Row(
-                children: [
-                  // Search Field
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      onChanged: (value) {
-                        setState(() {
-                          _searchQuery = value.trim();
-                        });
-                      },
-                      style: const TextStyle(fontSize: 14),
-                      decoration: InputDecoration(
-                        hintText: 'Cari nomor, pemesan, dokumen...',
-                        hintStyle: TextStyle(
-                          fontSize: 13,
-                          color: isDark ? AppColors.darkMutedText : AppColors.lightSubtleText,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.search_rounded,
-                          size: 20,
-                          color: isDark ? AppColors.darkMutedText : AppColors.lightSubtleText,
-                        ),
-                        suffixIcon: _searchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear_rounded, size: 18),
-                                onPressed: () {
-                                  setState(() {
-                                    _searchController.clear();
-                                    _searchQuery = '';
-                                  });
-                                },
-                              )
-                            : null,
-                        filled: true,
-                        fillColor: isDark ? AppColors.darkSurface : Colors.white,
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: isDark ? AppColors.teal300 : AppColors.teal700,
-                            width: 1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Sort Button
-                  PopupMenuButton<String>(
-                    onSelected: (value) {
-                      setState(() {
-                        _sortBy = value;
-                      });
-                    },
-                    icon: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: isDark ? AppColors.darkSurface : Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.filter_list_rounded,
-                        color: isDark ? AppColors.teal300 : AppColors.teal700,
-                        size: 20,
-                      ),
-                    ),
-                    tooltip: 'Urutkan Pesanan',
-                    itemBuilder: (context) => [
-                      _buildSortMenuItem('Terbaru', 'Tanggal: Terbaru'),
-                      _buildSortMenuItem('Terlama', 'Tanggal: Terlama'),
-                      _buildSortMenuItem('Terbesar', 'Total: Terbesar'),
-                      _buildSortMenuItem('Terkecil', 'Total: Terkecil'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Tabs Content
-            Expanded(
-              child: TabBarView(
-                children: [
-                  _buildTabList(allOrders, 'Semua', theme, isDark),
-                  _buildTabList(allOrders, 'Baru', theme, isDark),
-                  _buildTabList(allOrders, 'Diproses', theme, isDark),
-                  _buildTabList(allOrders, 'Selesai/Batal', theme, isDark),
-                ],
-              ),
-            ),
-          ],
         ),
       ),
     );
   }
+
+
 
   PopupMenuItem<String> _buildSortMenuItem(String value, String label) {
     final isSelected = _sortBy == value;

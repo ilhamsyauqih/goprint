@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,61 +20,76 @@ class UploadFileScreen extends StatefulWidget {
 class _UploadFileScreenState extends State<UploadFileScreen> {
   final OrderFlowManager _orderFlow = OrderFlowManager.instance;
 
-  // Daftar berkas tiruan untuk disimulasikan saat di-tap
-  final List<Map<String, dynamic>> _mockFilesToUpload = [
-    {
-      'name': 'Tugas_Akhir_Bab_1-3_Final.pdf',
-      'size': '1.8 MB',
-      'pages': 14,
-    },
-    {
-      'name': 'Laporan_Magang_PrimaPrint.pdf',
-      'size': '4.5 MB',
-      'pages': 36,
-    },
-    {
-      'name': 'CV_Ilham_Syauqi_2026.pdf',
-      'size': '720 KB',
-      'pages': 2,
-    },
-    {
-      'name': 'Lampiran_Dokumen_Persetujuan.pdf',
-      'size': '2.1 MB',
-      'pages': 8,
-    },
-  ];
+  int _getPdfPageCount(Uint8List bytes) {
+    try {
+      final content = String.fromCharCodes(bytes);
+      
+      // Cari /Type /Pages dan /Count
+      final pagesRegExp = RegExp(r'/Type\s*/Pages.*?/Count\s+(\d+)', dotAll: true);
+      final pagesMatch = pagesRegExp.firstMatch(content);
+      if (pagesMatch != null) {
+        final count = int.tryParse(pagesMatch.group(1) ?? '');
+        if (count != null && count > 0) return count;
+      }
 
-  int _uploadIndex = 0;
+      // Alternatif: hitung objek /Type /Page
+      final pageRegExp = RegExp(r'/Type\s*/Page\b');
+      final count = pageRegExp.allMatches(content).length;
+      return count > 0 ? count : 1;
+    } catch (e) {
+      return 1;
+    }
+  }
 
-  void _simulateUpload() {
-    if (_uploadIndex < _mockFilesToUpload.length) {
-      final fileData = _mockFilesToUpload[_uploadIndex];
-      setState(() {
-        _orderFlow.addMockFile(
-          fileData['name'],
-          fileData['size'],
-          fileData['pages'],
-        );
-        _uploadIndex++;
-      });
-
-      // Tampilkan feedback snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Berkas "${fileData['name']}" berhasil diunggah!'),
-          duration: const Duration(seconds: 1),
-        ),
+  Future<void> _pickAndUploadFile() async {
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        withData: true,
       );
-    } else {
-      // Jika list tiruan habis, tambahkan berkas standar
-      final mockName = 'Dokumen_Tambahan_${DateTime.now().millisecondsSinceEpoch % 100}.pdf';
-      setState(() {
-        _orderFlow.addMockFile(mockName, '1.1 MB', 5);
-      });
+
+      if (result != null && result.files.isNotEmpty) {
+        final pickedFile = result.files.single;
+        final name = pickedFile.name;
+        final sizeBytes = pickedFile.size;
+        final sizeKb = sizeBytes / 1024;
+        final sizeStr = sizeKb > 1024
+            ? '${(sizeKb / 1024).toStringAsFixed(1)} MB'
+            : '${sizeKb.toStringAsFixed(0)} KB';
+
+        final bytes = pickedFile.bytes;
+        if (bytes == null) {
+          throw Exception('Gagal membaca data berkas.');
+        }
+
+        final pageCount = _getPdfPageCount(bytes);
+
+        setState(() {
+          _orderFlow.addRealFile(
+            name,
+            sizeStr,
+            pageCount,
+            pickedFile.path,
+            bytes,
+          );
+        });
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Berkas "$name" ($pageCount halaman) berhasil dipilih!'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Berkas "$mockName" berhasil diunggah!'),
-          duration: const Duration(seconds: 1),
+          content: Text('Gagal memilih berkas: $e'),
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -150,7 +167,7 @@ class _UploadFileScreenState extends State<UploadFileScreen> {
                   const SizedBox(height: 24),
 
                   // Area Unggah File
-                  FileUploadArea(onTap: _simulateUpload),
+                  FileUploadArea(onTap: _pickAndUploadFile),
                   const SizedBox(height: 28),
 
                   // Header List File
@@ -168,7 +185,6 @@ class _UploadFileScreenState extends State<UploadFileScreen> {
                           onPressed: () {
                             setState(() {
                               _orderFlow.uploadedFiles.clear();
-                              _uploadIndex = 0;
                             });
                           },
                           child: const Text('Hapus Semua'),
