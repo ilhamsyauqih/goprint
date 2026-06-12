@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
@@ -17,6 +18,7 @@ class SuperAdminShopDetailScreen extends StatefulWidget {
 class _SuperAdminShopDetailScreenState extends State<SuperAdminShopDetailScreen> {
   final _reasonController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _passwordVisible = false;
 
   @override
   void dispose() {
@@ -252,6 +254,10 @@ class _SuperAdminShopDetailScreenState extends State<SuperAdminShopDetailScreen>
                 ),
                 const SizedBox(height: 20),
 
+                // Credential Card Admin Toko
+                _buildCredentialSection(shop, isDark, theme),
+                const SizedBox(height: 20),
+
                 // Legal Documents Simulation
                 _buildInfoSection(
                   title: 'Dokumen Legalitas (Simulasi)',
@@ -275,6 +281,7 @@ class _SuperAdminShopDetailScreenState extends State<SuperAdminShopDetailScreen>
 
                 // Action Buttons
                 _buildActionButtons(shop, saManager, context),
+                const SizedBox(height: 24),
               ],
             ),
           ),
@@ -301,6 +308,241 @@ class _SuperAdminShopDetailScreenState extends State<SuperAdminShopDetailScreen>
           ),
           const SizedBox(height: 12),
           ...children,
+        ],
+      ),
+    );
+  }
+
+  /// Credential card: shows generated admin email & password with copy and regenerate
+  Widget _buildCredentialSection(Shop shop, bool isDark, ThemeData theme) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isDark
+              ? [const Color(0xFF1A2F4A), const Color(0xFF0D1F35)]
+              : [const Color(0xFF0F3460), const Color(0xFF16213E)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.key_rounded, color: Colors.amber, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Kredensial Admin Toko',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        'Bagikan ke pemilik untuk akses panel admin',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.6),
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Regenerate button
+                Tooltip(
+                  message: 'Buat ulang password (Simulasi)',
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Password berhasil di-reset! (Simulasi)'),
+                          backgroundColor: Colors.teal,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.refresh_rounded,
+                        color: Colors.white70,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Divider
+          Divider(height: 1, color: Colors.white.withValues(alpha: 0.1)),
+
+          // Email row
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 8, 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'EMAIL LOGIN',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        shop.adminEmail,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'monospace',
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.copy_rounded, size: 18, color: Colors.white60),
+                      tooltip: 'Salin email',
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: shop.adminEmail));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Email disalin ke clipboard!'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          Divider(height: 1, thickness: 1, indent: 16, endIndent: 16, color: Colors.white.withValues(alpha: 0.08)),
+
+          // Password row
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 10, 8, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'PASSWORD',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _passwordVisible ? shop.adminPassword : '\u2022' * shop.adminPassword.length,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: _passwordVisible ? 14 : 16,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: _passwordVisible ? 0 : 2,
+                          fontFamily: 'monospace',
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        _passwordVisible ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                        size: 18,
+                        color: Colors.white60,
+                      ),
+                      tooltip: _passwordVisible ? 'Sembunyikan' : 'Tampilkan',
+                      onPressed: () {
+                        setState(() => _passwordVisible = !_passwordVisible);
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.copy_rounded, size: 18, color: Colors.white60),
+                      tooltip: 'Salin password',
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: shop.adminPassword));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Password disalin ke clipboard!'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Bottom info banner
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.amber.withValues(alpha: 0.12),
+              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.info_outline_rounded, color: Colors.amber, size: 14),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Gunakan kredensial ini untuk login sebagai Admin Toko di GoPrint.',
+                    style: TextStyle(
+                      color: Colors.amber.shade200,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

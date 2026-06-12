@@ -101,6 +101,10 @@ class Shop {
   final List<OperatingHour> operatingHours;
   final String verificationStatus; // 'approved' | 'pending' | 'suspended'
   final String? suspensionReason;
+  /// Email akun admin toko yang di-generate oleh super admin
+  final String adminEmail;
+  /// Password akun admin toko yang di-generate oleh super admin
+  final String adminPassword;
 
   const Shop({
     required this.id,
@@ -115,6 +119,8 @@ class Shop {
     required this.services,
     required this.reviews,
     required this.operatingHours,
+    this.adminEmail = '',
+    this.adminPassword = '',
     this.verificationStatus = 'approved',
     this.suspensionReason,
   });
@@ -134,6 +140,8 @@ class Shop {
     List<OperatingHour>? operatingHours,
     String? verificationStatus,
     String? suspensionReason,
+    String? adminEmail,
+    String? adminPassword,
   }) {
     return Shop(
       id: id ?? this.id,
@@ -150,6 +158,8 @@ class Shop {
       operatingHours: operatingHours ?? this.operatingHours,
       verificationStatus: verificationStatus ?? this.verificationStatus,
       suspensionReason: suspensionReason ?? this.suspensionReason,
+      adminEmail: adminEmail ?? this.adminEmail,
+      adminPassword: adminPassword ?? this.adminPassword,
     );
   }
 }
@@ -169,6 +179,8 @@ class MockShops {
       description: 'Menerima jasa print dokumen harian, skripsi, jilid hard/soft cover kilat, laminating ukuran A4 s/d A3. Pelayanan cepat dengan mesin berkecepatan tinggi.',
       address: 'Jl. Kaliurang KM 5.2, Gang Sunan Giri No. 12, Sleman, DI Yogyakarta',
       phone: '0812-3456-7890',
+      adminEmail: 'admin.suryagemilang@goprint.id',
+      adminPassword: 'SuryaGP@2026',
       verificationStatus: 'approved',
       services: [
         ServiceItem(
@@ -250,6 +262,8 @@ class MockShops {
       description: 'Pusat cetak dokumen dan percetakan cepat. Menyediakan cetak brosur, poster, print warna laser jet kualitas tinggi, jilid softcover lem panas, laminasi doff/glossy.',
       address: 'Jl. Pandega Marta No. 8B, Sleman, DI Yogyakarta',
       phone: '0821-9876-5432',
+      adminEmail: 'admin.primacenter@goprint.id',
+      adminPassword: 'PrimaGP@2026',
       verificationStatus: 'approved',
       services: [
         ServiceItem(
@@ -312,6 +326,8 @@ class MockShops {
       description: 'Melayani fotokopi eceran dan grosir, cetak dokumen PDF/Word via WhatsApp atau Flashdisk, laminating presisi tinggi, scan dokumen legalisasi.',
       address: 'Jl. Selokan Mataram No. 45, Caturtunggal, Depok, Sleman, DI Yogyakarta',
       phone: '0877-5555-1234',
+      adminEmail: 'admin.jayaabadi@goprint.id',
+      adminPassword: 'JayaGP@2026',
       verificationStatus: 'pending',
       services: [
         ServiceItem(
@@ -368,6 +384,8 @@ class MockShops {
       description: 'Layanan print dokumen hitam-putih cepat dan terpercaya.',
       address: 'Jl. Gejayan No. 15, Sleman, DI Yogyakarta',
       phone: '0899-1111-2222',
+      adminEmail: 'admin.majujaya@goprint.id',
+      adminPassword: 'MajuGP@2026',
       verificationStatus: 'suspended',
       suspensionReason: 'Melanggar syarat ketentuan layanan: spam promosi berulang kali',
       services: [

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/validators.dart';
 import '../../../../data/repositories/auth_repository_impl.dart';
+import '../../../../features/shop/data/mock_shops.dart';
 import '../../../../shared/widgets/primary_button.dart';
 import '../widgets/auth_scaffold.dart';
 import '../widgets/auth_switch_prompt.dart';
@@ -35,17 +36,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     setState(() => _isLoading = true);
 
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
     try {
-      // Panggil Supabase signIn via authRepositoryProvider
-      final authRepo = ref.read(authRepositoryProvider);
-      await authRepo.signIn(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+      // ── Cek kredensial admin toko (mock) terlebih dahulu ──────────
+      final matchedShop = MockShops.shops.where(
+        (s) => s.adminEmail == email && s.adminPassword == password,
       );
 
-      if (!mounted) return;
+      if (matchedShop.isNotEmpty) {
+        if (!mounted) return;
+        // Login sebagai Admin Toko → redirect ke dashboard admin
+        context.go('/admin/dashboard');
+        return;
+      }
 
-      // Navigate ke halaman utama setelah login berhasil
+      // ── Cek super admin hard-coded ─────────────────────────────────
+      if (email == 'superadmin@goprint.id' && password == 'SuperAdmin@2026') {
+        if (!mounted) return;
+        context.go('/superadmin/dashboard');
+        return;
+      }
+
+      // ── Fallback ke Supabase signIn untuk pengguna biasa ──────────
+      final authRepo = ref.read(authRepositoryProvider);
+      await authRepo.signIn(email: email, password: password);
+
+      if (!mounted) return;
       context.go('/home');
     } catch (e) {
       if (!mounted) return;
