@@ -38,20 +38,30 @@ class OrderItemSummaryCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Icon PDF
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? AppColors.teal800.withValues(alpha: 0.2)
-                  : const Color(0xFFE0F2F1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              Icons.picture_as_pdf_rounded,
-              color: isDark ? AppColors.teal300 : AppColors.teal700,
-              size: 20,
-            ),
+          Builder(
+            builder: (context) {
+              final isDocx = file.name.toLowerCase().endsWith('.docx');
+              final iconData = isDocx ? Icons.description_rounded : Icons.picture_as_pdf_rounded;
+              final iconColor = isDocx
+                  ? (isDark ? Colors.blue.shade300 : Colors.blue.shade700)
+                  : (isDark ? const Color(0xFFEF5350) : const Color(0xFFD32F2F));
+              final iconBgColor = isDocx
+                  ? (isDark ? Colors.blue.shade900.withValues(alpha: 0.2) : Colors.blue.shade50)
+                  : (isDark ? const Color(0xFFEF5350).withValues(alpha: 0.15) : const Color(0xFFFFEBEE));
+
+              return Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: iconBgColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  iconData,
+                  color: iconColor,
+                  size: 20,
+                ),
+              );
+            },
           ),
           const SizedBox(width: 12),
           

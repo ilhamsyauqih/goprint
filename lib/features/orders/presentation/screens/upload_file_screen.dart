@@ -8,8 +8,9 @@ import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../data/order_flow_manager.dart';
 import '../widgets/file_card.dart';
 import '../widgets/file_upload_area.dart';
+import '../../../../core/utils/docx_helper.dart';
 
-/// Halaman Langkah 2: Unggah Berkas PDF.
+/// Halaman Langkah 2: Unggah Berkas PDF & DOCX.
 class UploadFileScreen extends StatefulWidget {
   const UploadFileScreen({super.key});
 
@@ -45,7 +46,7 @@ class _UploadFileScreenState extends State<UploadFileScreen> {
     try {
       final result = await FilePicker.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf'],
+        allowedExtensions: ['pdf', 'docx'],
         withData: true,
       );
 
@@ -63,7 +64,15 @@ class _UploadFileScreenState extends State<UploadFileScreen> {
           throw Exception('Gagal membaca data berkas.');
         }
 
-        final pageCount = _getPdfPageCount(bytes);
+        final isPdf = name.toLowerCase().endsWith('.pdf');
+        final isDocx = name.toLowerCase().endsWith('.docx');
+
+        int pageCount = 1;
+        if (isPdf) {
+          pageCount = _getPdfPageCount(bytes);
+        } else if (isDocx) {
+          pageCount = DocxHelper.getPageCount(bytes);
+        }
 
         setState(() {
           _orderFlow.addRealFile(
@@ -151,7 +160,7 @@ class _UploadFileScreenState extends State<UploadFileScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Unggah Dokumen PDF',
+                    'Unggah Dokumen',
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),

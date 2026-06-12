@@ -39,22 +39,31 @@ class OrderItemDetailCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: isDark 
-                      ? const Color(0xFFC62828).withValues(alpha: 0.15) 
-                      : const Color(0xFFFFEBEE),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.picture_as_pdf_rounded,
-                    color: Color(0xFFD32F2F),
-                    size: 24,
-                  ),
-                ),
+              Builder(
+                builder: (context) {
+                  final isDocx = file.name.toLowerCase().endsWith('.docx');
+                  final iconData = isDocx ? Icons.description_rounded : Icons.picture_as_pdf_rounded;
+                  final iconColor = isDocx ? const Color(0xFF1976D2) : const Color(0xFFD32F2F);
+                  final iconBgColor = isDark
+                      ? (isDocx ? const Color(0xFF1565C0).withValues(alpha: 0.15) : const Color(0xFFC62828).withValues(alpha: 0.15))
+                      : (isDocx ? const Color(0xFFE3F2FD) : const Color(0xFFFFEBEE));
+
+                  return Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: iconBgColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        iconData,
+                        color: iconColor,
+                        size: 24,
+                      ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(width: 12),
               Expanded(

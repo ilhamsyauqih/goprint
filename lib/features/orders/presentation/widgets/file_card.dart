@@ -40,21 +40,32 @@ class FileCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            // ─── Ikon Berkas (PDF Icon) ──────────────────────────────
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFFEF5350).withValues(alpha: 0.15)
-                    : const Color(0xFFFFEBEE),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.picture_as_pdf_rounded,
-                color: isDark ? AppColors.errorDark : AppColors.error,
-                size: 26,
-              ),
+            // ─── Ikon Berkas (Dynamic Icon based on file type) ──────────────────────────────
+            Builder(
+              builder: (context) {
+                final isDocx = file.name.toLowerCase().endsWith('.docx');
+                final iconData = isDocx ? Icons.description_rounded : Icons.picture_as_pdf_rounded;
+                final iconColor = isDocx
+                    ? (isDark ? Colors.blue.shade300 : Colors.blue.shade700)
+                    : (isDark ? AppColors.errorDark : AppColors.error);
+                final iconBgColor = isDocx
+                    ? (isDark ? Colors.blue.shade900.withValues(alpha: 0.2) : Colors.blue.shade50)
+                    : (isDark ? const Color(0xFFEF5350).withValues(alpha: 0.15) : const Color(0xFFFFEBEE));
+
+                return Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: iconBgColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    iconData,
+                    color: iconColor,
+                    size: 26,
+                  ),
+                );
+              },
             ),
             const SizedBox(width: 16),
 
