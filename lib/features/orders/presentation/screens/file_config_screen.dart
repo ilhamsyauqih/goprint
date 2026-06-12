@@ -263,8 +263,7 @@ class _FileConfigScreenState extends State<FileConfigScreen> {
 
                   // ─── Pratinjau PDF (PdfPreviewWidget) ─────────────────────────
                   PdfPreviewWidget(
-                    totalPages: activeFile.pageCount,
-                    fileName: activeFile.name,
+                    file: activeFile,
                   ),
                   const SizedBox(height: 28),
 

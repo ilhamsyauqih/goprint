@@ -58,7 +58,7 @@ class FileUploadArea extends StatelessWidget {
 
               // Judul Utama
               Text(
-                'Unggah File PDF',
+                'Unggah File Dokumen',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -67,7 +67,7 @@ class FileUploadArea extends StatelessWidget {
 
               // Hint Deskripsi
               Text(
-                'Seret & lepas berkas PDF di sini atau ketuk area ini untuk mencari berkas.',
+                'Seret & lepas berkas PDF atau DOCX di sini atau ketuk area ini untuk mencari berkas.',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: isDark ? AppColors.darkMutedText : AppColors.lightSubtleText,
                   height: 1.3,
@@ -78,7 +78,7 @@ class FileUploadArea extends StatelessWidget {
 
               // Ketentuan File
               Text(
-                'Format yang didukung: .pdf (Maks. 25 MB)',
+                'Format yang didukung: .pdf, .docx (Maks. 25 MB)',
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: isDark ? AppColors.teal300 : AppColors.teal700,
                   fontWeight: FontWeight.w600,
