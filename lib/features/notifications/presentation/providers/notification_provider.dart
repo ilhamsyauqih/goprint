@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../data/models/notification_model.dart';
 import '../../../../data/repositories/notification_repository_impl.dart';
 import '../../../../data/repositories/auth_repository_impl.dart';
+import '../../data/notification_store.dart';
 
 class NotificationState {
   final List<NotificationModel> notifications;
@@ -36,18 +37,49 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
     loadNotifications();
   }
 
+  void _syncToStore(List<NotificationModel> models) {
+    notificationStore.value = models.map((m) {
+      NotificationType type = NotificationType.system;
+      switch (m.type) {
+        case 'order':
+        case 'order_update':
+          type = NotificationType.order;
+          break;
+        case 'payment':
+          type = NotificationType.payment;
+          break;
+        case 'promo':
+          type = NotificationType.promo;
+          break;
+        case 'system':
+          type = NotificationType.system;
+          break;
+      }
+      return GoPrintNotification(
+        id: m.id,
+        title: m.title,
+        body: m.body,
+        timeLabel: '',
+        type: type,
+        isRead: m.isRead,
+      );
+    }).toList();
+  }
+
   Future<void> loadNotifications() async {
     state = state.copyWith(isLoading: true);
     try {
       final user = await _ref.read(authRepositoryProvider).getCurrentUser();
       if (user == null) {
         state = state.copyWith(isLoading: false, errorMessage: 'User not logged in');
+        notificationStore.clear();
         return;
       }
 
       final repo = _ref.read(notificationRepositoryProvider);
       final list = await repo.getUserNotifications(user.id);
       state = state.copyWith(notifications: list, isLoading: false);
+      _syncToStore(list);
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
@@ -67,6 +99,7 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
           return n;
         }).toList(),
       );
+      _syncToStore(state.notifications);
     } catch (e) {
       // Refresh to ensure correctness if update fails
       await loadNotifications();
@@ -84,6 +117,7 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
       state = state.copyWith(
         notifications: state.notifications.map((n) => n.copyWith(isRead: true)).toList(),
       );
+      _syncToStore(state.notifications);
     } catch (e) {
       await loadNotifications();
     }
