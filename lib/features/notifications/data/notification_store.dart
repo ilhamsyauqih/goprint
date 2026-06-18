@@ -32,7 +32,7 @@ class GoPrintNotification {
 }
 
 class NotificationStore extends ValueNotifier<List<GoPrintNotification>> {
-  NotificationStore() : super(_seedNotifications);
+  NotificationStore() : super(const []);
 
   int get unreadCount {
     return value.where((notification) => !notification.isRead).length;

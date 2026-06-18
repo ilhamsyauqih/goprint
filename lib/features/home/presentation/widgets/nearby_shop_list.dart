@@ -37,7 +37,7 @@ class NearbyShopList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 200, // Fixed height for horizontal scroll
+      height: 210, // Fixed height for horizontal scroll
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),

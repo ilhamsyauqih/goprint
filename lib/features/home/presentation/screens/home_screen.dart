@@ -33,12 +33,12 @@ class HomeScreen extends ConsumerWidget {
         slivers: [
           // ─── App Bar & Header ─────────────────────────────────────
           SliverAppBar(
-            expandedHeight: 140,
+            expandedHeight: 170,
             toolbarHeight: 0, // Menghilangkan area kosong di atas search bar saat di-scroll
             floating: false,
             pinned: true,
             elevation: 0,
-            backgroundColor: AppColors.teal700,
+            backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: BoxDecoration(
@@ -47,31 +47,31 @@ class HomeScreen extends ConsumerWidget {
                       : AppColors.headerGradient,
                 ),
                 child: SafeArea(
-                  child: Column(
-                    children: [
-                      GreetingHeader(
-                        name: userName,
-                        unreadNotifications: unreadCount,
-                        onNotificationTap: () => context.go('/notifications'),
-                      ),
-                    ],
+                  child: SingleChildScrollView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        GreetingHeader(
+                          name: userName,
+                          unreadNotifications: unreadCount,
+                          onNotificationTap: () => context.go('/notifications'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
             bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(28),
-              child: Transform.translate(
-                offset: const Offset(0, 24),
-                child: HomeSearchBar(
-                  onTap: () => context.push('/shops'),
-                ),
+              preferredSize: const Size.fromHeight(56),
+              child: HomeSearchBar(
+                onTap: () => context.push('/shops'),
               ),
             ),
           ),
 
-          // Padding kompensasi untuk search bar yang floating
-          const SliverToBoxAdapter(child: SizedBox(height: 36)),
+          // Spacing below search bar
+          const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
           // ─── Main Content (SliverList) ────────────────────────────
           SliverList(
