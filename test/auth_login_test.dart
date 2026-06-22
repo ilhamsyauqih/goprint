@@ -112,6 +112,11 @@ class FakeAuthRepository implements AuthRepository {
     required String name,
     required String phone,
     String role = 'user',
+    String? shopName,
+    String? shopAddress,
+    String? gmapsLink,
+    String? nibFilePath,
+    String? ktpFilePath,
   }) async {
     throw UnimplementedError();
   }

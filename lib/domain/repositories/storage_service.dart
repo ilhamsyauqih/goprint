@@ -28,6 +28,14 @@ abstract class StorageService {
     Uint8List? bytes,
   });
 
+  /// Upload seller document (NIB / KTP) to the 'seller-documents' bucket
+  Future<String> uploadSellerDocument({
+    required String userId,
+    required String fileName,
+    File? file,
+    Uint8List? bytes,
+  });
+
   /// Generate a temporary public URL for private files
   Future<String> getSignedUrl(
     String bucket,
