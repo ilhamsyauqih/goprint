@@ -54,7 +54,7 @@ class MockTemplates {
           'dan keterangan alasan.',
       fileUrl: 'https://example.com/files/surat-izin-kuliah.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1568667256549-094345857637?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&fit=crop',
       downloadCount: 1243,
       rating: 4.7,
       createdAt: '2026-01-10',
@@ -69,7 +69,7 @@ class MockTemplates {
           'tempat, dan penanggung jawab kegiatan.',
       fileUrl: 'https://example.com/files/surat-izin-kegiatan.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1568667256549-094345857637?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&fit=crop',
       downloadCount: 876,
       rating: 4.5,
       createdAt: '2026-01-15',
@@ -84,7 +84,7 @@ class MockTemplates {
           'lainnya. Sudah sesuai format resmi institusi.',
       fileUrl: 'https://example.com/files/surat-ket-mahasiswa.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1568667256549-094345857637?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&fit=crop',
       downloadCount: 562,
       rating: 4.3,
       createdAt: '2026-02-01',
@@ -101,7 +101,7 @@ class MockTemplates {
           'nama mata kuliah, nama mahasiswa, NIM, program studi, dan tahun ajaran.',
       fileUrl: 'https://example.com/files/cover-laporan-praktikum.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&fit=crop',
       downloadCount: 3421,
       rating: 4.9,
       createdAt: '2026-01-05',
@@ -116,7 +116,7 @@ class MockTemplates {
           'dan keterangan program studi serta tahun. Mendukung Arial/Times New Roman.',
       fileUrl: 'https://example.com/files/cover-skripsi.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&fit=crop',
       downloadCount: 5102,
       rating: 4.8,
       createdAt: '2026-01-03',
@@ -131,7 +131,7 @@ class MockTemplates {
           'dan periode kegiatan.',
       fileUrl: 'https://example.com/files/cover-kkn-pkl.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400&fit=crop',
       downloadCount: 2150,
       rating: 4.6,
       createdAt: '2026-01-08',
@@ -148,7 +148,7 @@ class MockTemplates {
           'dan sumber lain sesuai panduan American Psychological Association.',
       fileUrl: 'https://example.com/files/daftar-pustaka-apa.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&fit=crop',
       downloadCount: 981,
       rating: 4.4,
       createdAt: '2026-01-20',
@@ -163,7 +163,7 @@ class MockTemplates {
           'ilmu komputer.',
       fileUrl: 'https://example.com/files/daftar-pustaka-ieee.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400&fit=crop',
       downloadCount: 723,
       rating: 4.2,
       createdAt: '2026-02-05',
@@ -181,7 +181,7 @@ class MockTemplates {
           'seminar proposal.',
       fileUrl: 'https://example.com/files/proposal-penelitian.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&fit=crop',
       downloadCount: 2087,
       rating: 4.7,
       createdAt: '2026-01-12',
@@ -196,7 +196,7 @@ class MockTemplates {
           'susunan acara, rencana anggaran biaya (RAB), dan lembar pengesahan.',
       fileUrl: 'https://example.com/files/proposal-kegiatan.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=400&fit=crop',
       downloadCount: 1456,
       rating: 4.5,
       createdAt: '2026-01-18',
@@ -214,7 +214,7 @@ class MockTemplates {
           'langsung dimodifikasi.',
       fileUrl: 'https://example.com/files/abstrak-skripsi-id.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1455390582262-044cdead27d8?w=400&fit=crop',
       downloadCount: 1832,
       rating: 4.6,
       createdAt: '2026-01-22',
@@ -229,7 +229,7 @@ class MockTemplates {
           '(max 250 words). Compatible with international journal format.',
       fileUrl: 'https://example.com/files/abstract-skripsi-en.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=400&fit=crop',
       downloadCount: 994,
       rating: 4.3,
       createdAt: '2026-02-10',
@@ -246,7 +246,7 @@ class MockTemplates {
           'keputusan, dan tanda tangan pimpinan rapat beserta notulen.',
       fileUrl: 'https://example.com/files/berita-acara-rapat.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=400&fit=crop',
       downloadCount: 643,
       rating: 4.4,
       createdAt: '2026-02-15',
@@ -261,7 +261,7 @@ class MockTemplates {
           'maupun penyerahan hasil kerja magang/PKL.',
       fileUrl: 'https://example.com/files/berita-acara-serah-terima.docx',
       thumbnailUrl:
-          'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&fit=crop',
+          'https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?w=400&fit=crop',
       downloadCount: 412,
       rating: 4.2,
       createdAt: '2026-02-20',

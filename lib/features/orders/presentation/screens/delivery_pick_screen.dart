@@ -534,6 +534,7 @@ class _DeliveryPickScreenState extends State<DeliveryPickScreen> {
                           'Lanjut ke Ringkasan',
                           style: theme.textTheme.labelLarge?.copyWith(
                             fontWeight: FontWeight.w700,
+                            color: isDark ? AppColors.teal900 : Colors.white,
                           ),
                         ),
                         const SizedBox(width: 8),
