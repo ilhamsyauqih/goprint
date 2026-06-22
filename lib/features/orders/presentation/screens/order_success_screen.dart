@@ -202,6 +202,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> with SingleTick
                         style: theme.textTheme.labelLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
+                          color: isDark ? AppColors.teal900 : Colors.white,
                         ),
                       ),
                     ),

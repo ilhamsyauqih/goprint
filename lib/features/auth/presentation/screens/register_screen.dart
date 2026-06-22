@@ -102,7 +102,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               textInputAction: TextInputAction.next,
               validator: AuthValidators.requiredField,
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
             AuthTextField(
               controller: _emailController,
               label: 'Email',
@@ -112,7 +112,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               textInputAction: TextInputAction.next,
               validator: AuthValidators.email,
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
             AuthTextField(
               controller: _passwordController,
               label: 'Password',
@@ -122,7 +122,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               textInputAction: TextInputAction.next,
               validator: AuthValidators.password,
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
             AuthTextField(
               controller: _phoneController,
               label: 'Nomor HP',
@@ -132,7 +132,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               textInputAction: TextInputAction.done,
               validator: AuthValidators.requiredField,
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 32),
             PrimaryButton(
               label: 'Register',
               onPressed: _submit,

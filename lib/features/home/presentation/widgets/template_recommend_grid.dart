@@ -123,11 +123,29 @@ class _RecommendCard extends StatelessWidget {
                           : [AppColors.teal200, AppColors.teal400],
                     ),
                   ),
-                  child: Icon(
-                    _iconForCategory(template.category),
-                    size: 40,
-                    color: Colors.white.withValues(alpha: 0.85),
-                  ),
+                  child: template.thumbnailUrl.isNotEmpty
+                      ? Image.network(
+                          template.thumbnailUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (ctx, e, st) => Icon(
+                            _iconForCategory(template.category),
+                            size: 40,
+                            color: Colors.white.withValues(alpha: 0.85),
+                          ),
+                          loadingBuilder: (ctx, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Icon(
+                              _iconForCategory(template.category),
+                              size: 40,
+                              color: Colors.white.withValues(alpha: 0.85),
+                            );
+                          },
+                        )
+                      : Icon(
+                          _iconForCategory(template.category),
+                          size: 40,
+                          color: Colors.white.withValues(alpha: 0.85),
+                        ),
                 ),
               ),
               // Info

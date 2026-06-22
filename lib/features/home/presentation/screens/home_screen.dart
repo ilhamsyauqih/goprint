@@ -33,33 +33,44 @@ class HomeScreen extends ConsumerWidget {
         slivers: [
           // ─── App Bar & Header ─────────────────────────────────────
           SliverAppBar(
-            expandedHeight: 170,
+            expandedHeight: 145,
             toolbarHeight: 0, // Menghilangkan area kosong di atas search bar saat di-scroll
             floating: false,
             pinned: true,
             elevation: 0,
             backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
             flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: isDark
-                      ? AppColors.headerGradientDark
-                      : AppColors.headerGradient,
-                ),
-                child: SafeArea(
-                  child: SingleChildScrollView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    child: Column(
-                      children: [
-                        GreetingHeader(
-                          name: userName,
-                          unreadNotifications: unreadCount,
-                          onNotificationTap: () => context.go('/notifications'),
+              background: Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: isDark
+                            ? AppColors.headerGradientDark
+                            : AppColors.headerGradient,
+                        borderRadius: const BorderRadius.vertical(
+                          bottom: Radius.circular(24),
                         ),
-                      ],
+                      ),
+                      child: SafeArea(
+                        bottom: false,
+                        child: SingleChildScrollView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          child: Column(
+                            children: [
+                              GreetingHeader(
+                                name: userName,
+                                unreadNotifications: unreadCount,
+                                onNotificationTap: () => context.go('/notifications'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 28),
+                ],
               ),
             ),
             bottom: PreferredSize(
