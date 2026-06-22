@@ -3,13 +3,20 @@
 import '../../data/models/user_model.dart';
 
 abstract class AuthRepository {
-  /// Sign up a new user/admin and automatically create their profile
+  /// Sign up a new user/admin/seller and automatically create their profile
+  /// If role is 'seller', also creates a new shop in the database
   Future<UserModel> signUp({
     required String email,
     required String password,
     required String name,
     required String phone,
     String role = 'user',
+    // Seller-specific fields
+    String? shopName,
+    String? shopAddress,
+    String? gmapsLink,
+    String? nibFilePath,
+    String? ktpFilePath,
   });
 
   /// Sign in with email and password

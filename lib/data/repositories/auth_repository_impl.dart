@@ -18,6 +18,11 @@ class AuthRepositoryImpl implements AuthRepository {
     required String name,
     required String phone,
     String role = 'user',
+    String? shopName,
+    String? shopAddress,
+    String? gmapsLink,
+    String? nibFilePath,
+    String? ktpFilePath,
   }) async {
     final response = await _client.auth.signUp(
       email: email,
@@ -32,6 +37,27 @@ class AuthRepositoryImpl implements AuthRepository {
     final user = response.user;
     if (user == null) {
       throw Exception('Sign up failed: User is null');
+    }
+
+    // Jika role seller, buat toko baru di database
+    if (role == 'seller' && shopName != null && shopAddress != null) {
+      final now = DateTime.now().toIso8601String();
+      await _client.from('shops').insert({
+        'owner_id': user.id,
+        'name': shopName,
+        'address': shopAddress,
+        'gmaps_link': gmapsLink,
+        'nib_file_url': nibFilePath,
+        'ktp_file_url': ktpFilePath,
+        'lat': 0.0,
+        'lng': 0.0,
+        'photo_urls': <String>[],
+        'operating_hours': <String, dynamic>{},
+        'is_open': false,
+        'rating': 0.0,
+        'created_at': now,
+        'updated_at': now,
+      });
     }
 
     return await getCurrentUserById(user.id);

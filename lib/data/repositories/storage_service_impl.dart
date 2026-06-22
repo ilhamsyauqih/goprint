@@ -85,6 +85,22 @@ class StorageServiceImpl implements StorageService {
   }
 
   @override
+  Future<String> uploadSellerDocument({
+    required String userId,
+    required String fileName,
+    File? file,
+    Uint8List? bytes,
+  }) async {
+    return await _upload(
+      bucket: 'seller-documents',
+      userId: userId,
+      fileName: fileName,
+      file: file,
+      bytes: bytes,
+    );
+  }
+
+  @override
   Future<String> getSignedUrl(
     String bucket,
     String path, {

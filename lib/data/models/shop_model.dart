@@ -12,6 +12,9 @@ class ShopModel {
   final Map<String, dynamic> operatingHours;
   final bool isOpen;
   final double rating;
+  final String? gmapsLink;
+  final String? nibFileUrl;
+  final String? ktpFileUrl;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -27,6 +30,9 @@ class ShopModel {
     required this.operatingHours,
     required this.isOpen,
     required this.rating,
+    this.gmapsLink,
+    this.nibFileUrl,
+    this.ktpFileUrl,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -44,6 +50,9 @@ class ShopModel {
       operatingHours: Map<String, dynamic>.from(json['operating_hours'] as Map? ?? {}),
       isOpen: json['is_open'] as bool? ?? true,
       rating: (json['rating'] as num? ?? 0.0).toDouble(),
+      gmapsLink: json['gmaps_link'] as String?,
+      nibFileUrl: json['nib_file_url'] as String?,
+      ktpFileUrl: json['ktp_file_url'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
@@ -62,6 +71,9 @@ class ShopModel {
       'operating_hours': operatingHours,
       'is_open': isOpen,
       'rating': rating,
+      'gmaps_link': gmapsLink,
+      'nib_file_url': nibFileUrl,
+      'ktp_file_url': ktpFileUrl,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -79,6 +91,9 @@ class ShopModel {
     Map<String, dynamic>? operatingHours,
     bool? isOpen,
     double? rating,
+    String? gmapsLink,
+    String? nibFileUrl,
+    String? ktpFileUrl,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -94,6 +109,9 @@ class ShopModel {
       operatingHours: operatingHours ?? this.operatingHours,
       isOpen: isOpen ?? this.isOpen,
       rating: rating ?? this.rating,
+      gmapsLink: gmapsLink ?? this.gmapsLink,
+      nibFileUrl: nibFileUrl ?? this.nibFileUrl,
+      ktpFileUrl: ktpFileUrl ?? this.ktpFileUrl,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
