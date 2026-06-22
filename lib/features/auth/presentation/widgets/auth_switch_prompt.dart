@@ -17,23 +17,34 @@ class AuthSwitchPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Flexible(
           child: Text(
             text,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.lightSubtleText,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: isDark ? AppColors.darkMutedText : AppColors.lightSubtleText,
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
         TextButton(
           onPressed: onPressed,
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
           child: Text(
             actionText,
-            style: const TextStyle(fontWeight: FontWeight.w800),
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppColors.teal300 : AppColors.teal700,
+            ),
           ),
         ),
       ],

@@ -214,6 +214,7 @@ class _SelectServiceScreenState extends State<SelectServiceScreen> {
                           'Lanjut ke Berkas',
                           style: theme.textTheme.labelLarge?.copyWith(
                             fontWeight: FontWeight.w700,
+                            color: isDark ? AppColors.teal900 : Colors.white,
                           ),
                         ),
                         const SizedBox(width: 8),

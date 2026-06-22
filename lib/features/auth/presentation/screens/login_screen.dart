@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../data/repositories/auth_repository_impl.dart';
 import '../../../../features/shop/data/mock_shops.dart';
@@ -88,6 +89,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return AuthScaffold(
       title: 'Masuk ke GoPrint',
       subtitle: 'Kelola pesanan print kampusmu dengan cepat dan transparan.',
@@ -105,7 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               textInputAction: TextInputAction.next,
               validator: AuthValidators.email,
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
             AuthTextField(
               controller: _passwordController,
               label: 'Password',
@@ -115,14 +119,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               textInputAction: TextInputAction.done,
               validator: AuthValidators.password,
             ),
+            const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: _isLoading ? null : _openForgotPassword,
-                child: const Text('Lupa password?'),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  'Lupa password?',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: isDark ? AppColors.teal300 : AppColors.teal700,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 20),
             PrimaryButton(
               label: 'Login',
               onPressed: _submit,

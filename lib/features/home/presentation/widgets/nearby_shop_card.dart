@@ -59,15 +59,39 @@ class NearbyShopCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    // Placeholder for actual NetworkImage
-                    Container(
-                      decoration: const BoxDecoration(color: AppColors.teal900),
-                      child: Icon(
-                        Icons.storefront_rounded,
-                        color: Colors.white.withValues(alpha: 0.2),
-                        size: 48,
-                      ),
-                    ),
+                    // Load actual NetworkImage if imageUrl is not empty, otherwise fallback
+                    imageUrl.isNotEmpty
+                        ? Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (ctx, e, st) => Container(
+                              decoration: const BoxDecoration(color: AppColors.teal900),
+                              child: Icon(
+                                Icons.storefront_rounded,
+                                color: Colors.white.withValues(alpha: 0.2),
+                                size: 48,
+                              ),
+                            ),
+                            loadingBuilder: (ctx, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                decoration: const BoxDecoration(color: AppColors.teal900),
+                                child: Icon(
+                                  Icons.storefront_rounded,
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  size: 48,
+                                ),
+                              );
+                            },
+                          )
+                        : Container(
+                            decoration: const BoxDecoration(color: AppColors.teal900),
+                            child: Icon(
+                              Icons.storefront_rounded,
+                              color: Colors.white.withValues(alpha: 0.2),
+                              size: 48,
+                            ),
+                          ),
                     // Gradient overlay
                     DecoratedBox(
                       decoration: BoxDecoration(

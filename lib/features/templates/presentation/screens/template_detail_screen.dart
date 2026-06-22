@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../data/mock_templates.dart';
@@ -51,34 +52,50 @@ class _TemplateDetailScreenState extends State<TemplateDetailScreen>
       setState(() => _isDownloadingPdf = true);
     }
 
-    // Simulasi unduhan (akan diganti dengan Supabase Storage download)
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      // Dapatkan URL dari model (contoh simulasi)
+      String urlString = widget.template.fileUrl;
+      // Jika butuh format PDF, kita asumsikan mengubah ekstensinya
+      if (format == 'PDF' && urlString.endsWith('.docx')) {
+        urlString = urlString.replaceAll('.docx', '.pdf');
+      }
 
-    if (mounted) {
-      setState(() {
-        _isDownloadingDocx = false;
-        _isDownloadingPdf = false;
-      });
+      // Untuk memastikan kita mendownload "file real" sebagai contoh, 
+      // kita ganti url dummy example.com dengan url file sungguhan
+      if (urlString.contains('example.com')) {
+        if (format == 'PDF') {
+          urlString = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+        } else {
+          urlString = 'https://filesamples.com/samples/document/docx/sample1.docx';
+        }
+      }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
-              const SizedBox(width: 12),
-              Text(
-                'Template berhasil diunduh ($format)',
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ],
+      final uri = Uri.parse(urlString);
+
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        throw 'Tidak dapat membuka tautan.';
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal mengunduh template: $e'),
+            backgroundColor: AppColors.error,
           ),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          margin: const EdgeInsets.all(16),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDownloadingDocx = false;
+          _isDownloadingPdf = false;
+        });
+      }
     }
   }
 

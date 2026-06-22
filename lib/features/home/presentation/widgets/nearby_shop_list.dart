@@ -14,7 +14,7 @@ class NearbyShopList extends StatelessWidget {
       'rating': 4.8,
       'distance': '0.5 km',
       'isOpen': true,
-      'imageUrl': '',
+      'imageUrl': 'https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?q=80&w=600&auto=format&fit=crop',
     },
     {
       'id': '2',
@@ -22,7 +22,7 @@ class NearbyShopList extends StatelessWidget {
       'rating': 4.5,
       'distance': '1.2 km',
       'isOpen': true,
-      'imageUrl': '',
+      'imageUrl': 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=600&auto=format&fit=crop',
     },
     {
       'id': '3',
@@ -30,7 +30,7 @@ class NearbyShopList extends StatelessWidget {
       'rating': 4.2,
       'distance': '2.1 km',
       'isOpen': false,
-      'imageUrl': '',
+      'imageUrl': 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=600&auto=format&fit=crop',
     },
   ];
 
