@@ -25,6 +25,11 @@ class _SuperAdminShopListScreenState extends State<SuperAdminShopListScreen> wit
     _tabController.addListener(() {
       setState(() {});
     });
+    
+    // Fetch shops from Supabase when entering the screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SuperAdminManager.instance.fetchShopsFromSupabase();
+    });
   }
 
   @override

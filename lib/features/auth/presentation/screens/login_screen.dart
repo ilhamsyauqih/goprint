@@ -62,10 +62,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       // ── Fallback ke Supabase signIn untuk pengguna biasa ──────────
       final authRepo = ref.read(authRepositoryProvider);
-      await authRepo.signIn(email: email, password: password);
+      final userModel = await authRepo.signIn(email: email, password: password);
 
       if (!mounted) return;
-      context.go('/home');
+      
+      // Sinkronisasi data toko dari Supabase setelah login berhasil
+      try {
+        await MockShops.syncFromSupabase();
+      } catch (e) {
+        debugPrint('Failed to sync shops on login: $e');
+      }
+
+      if (!mounted) return;
+
+      if (userModel.role == 'admin') {
+        context.go('/admin/dashboard');
+      } else if (userModel.role == 'superadmin') {
+        context.go('/superadmin/dashboard');
+      } else {
+        context.go('/home');
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

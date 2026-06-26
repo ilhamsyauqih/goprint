@@ -1,3 +1,7 @@
+import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../super_admin/data/super_admin_manager.dart';
+
 /// Model untuk representasi data layanan toko.
 class ServiceItem {
   final String name;
@@ -408,4 +412,76 @@ class MockShops {
       ],
     ),
   ];
+
+  static Future<void> syncFromSupabase() async {
+    try {
+      final client = Supabase.instance.client;
+      final List data = await client.from('shops').select('*, profiles:owner_id(role, phone)');
+      
+      for (final row in data) {
+        final id = row['id'] as String;
+        final name = row['name'] as String;
+        final address = row['address'] as String;
+        final description = row['description'] as String? ?? '';
+        final rating = (row['rating'] as num? ?? 0.0).toDouble();
+        final isOpen = row['is_open'] as bool? ?? false;
+        
+        final profiles = row['profiles'] as Map<String, dynamic>?;
+        final role = profiles?['role'] as String? ?? 'user';
+        final phone = profiles?['phone'] as String? ?? '';
+
+        String status = 'approved';
+        if (role == 'seller') {
+          status = 'pending';
+        }
+
+        // Apply local overrides from SuperAdminManager if any
+        try {
+          final saManager = SuperAdminManager.instance;
+          if (saManager.locallyApprovedShopIds.contains(id)) {
+            status = 'approved';
+          } else if (saManager.locallySuspendedShopIds.contains(id)) {
+            status = 'suspended';
+          }
+        } catch (_) {
+          // Fallback if SuperAdminManager is not ready
+        }
+
+        // Check if already exists
+        final existingIndex = shops.indexWhere((s) => s.id == id || s.name == name);
+        if (existingIndex != -1) {
+          shops[existingIndex] = shops[existingIndex].copyWith(
+            id: id,
+            name: name,
+            address: address,
+            description: description,
+            rating: rating,
+            isOpen: isOpen,
+            phone: phone,
+            verificationStatus: status,
+          );
+        } else {
+          shops.add(
+            Shop(
+              id: id,
+              name: name,
+              imageUrl: 'https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?q=80&w=600&auto=format&fit=crop',
+              rating: rating,
+              distance: '1.2 km',
+              isOpen: isOpen,
+              description: description.isNotEmpty ? description : 'Mitra Toko Baru',
+              address: address,
+              phone: phone,
+              services: const [],
+              reviews: const [],
+              operatingHours: const [],
+              verificationStatus: status,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error syncing shops from Supabase: $e');
+    }
+  }
 }

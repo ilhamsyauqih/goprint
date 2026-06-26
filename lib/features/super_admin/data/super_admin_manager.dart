@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../shop/data/mock_shops.dart';
 
 /// Model untuk pengajuan penarikan dana (Payout Request)
@@ -130,6 +131,10 @@ class SuperAdminManager extends ChangeNotifier {
 
   static final SuperAdminManager instance = SuperAdminManager._();
 
+  // Keep track of locally approved/suspended shops to prevent Supabase sync from overwriting them
+  final Set<String> locallyApprovedShopIds = {};
+  final Set<String> locallySuspendedShopIds = {};
+
   // 1. Data Payout Requests
   final List<PayoutRequest> _payouts = [
     const PayoutRequest(
@@ -233,8 +238,16 @@ class SuperAdminManager extends ChangeNotifier {
 
   SystemConfig get config => _config;
 
+  Future<void> fetchShopsFromSupabase() async {
+    await MockShops.syncFromSupabase();
+    notifyListeners();
+  }
+
   // 4. Operasi Aksi Mitra Toko (Menyetujui & Menangguhkan)
-  void approveShop(String shopId) {
+  Future<void> approveShop(String shopId) async {
+    locallyApprovedShopIds.add(shopId);
+    locallySuspendedShopIds.remove(shopId);
+
     final index = MockShops.shops.indexWhere((s) => s.id == shopId);
     if (index != -1) {
       MockShops.shops[index] = MockShops.shops[index].copyWith(
@@ -242,10 +255,25 @@ class SuperAdminManager extends ChangeNotifier {
         suspensionReason: null,
       );
       notifyListeners();
+
+      // Sinkronisasi ke Supabase
+      try {
+        final client = Supabase.instance.client;
+        final shopData = await client.from('shops').select('owner_id').eq('id', shopId).maybeSingle();
+        if (shopData != null) {
+          final ownerId = shopData['owner_id'] as String;
+          await client.from('profiles').update({'role': 'admin'}).eq('id', ownerId);
+        }
+      } catch (e) {
+        debugPrint('Error updating shop owner to admin in Supabase: $e');
+      }
     }
   }
 
-  void suspendShop(String shopId, String reason) {
+  Future<void> suspendShop(String shopId, String reason) async {
+    locallySuspendedShopIds.add(shopId);
+    locallyApprovedShopIds.remove(shopId);
+
     final index = MockShops.shops.indexWhere((s) => s.id == shopId);
     if (index != -1) {
       MockShops.shops[index] = MockShops.shops[index].copyWith(
@@ -253,6 +281,19 @@ class SuperAdminManager extends ChangeNotifier {
         suspensionReason: reason,
       );
       notifyListeners();
+
+      // Sinkronisasi ke Supabase (ubah kembali role ke 'seller' dan matikan toko)
+      try {
+        final client = Supabase.instance.client;
+        await client.from('shops').update({'is_open': false}).eq('id', shopId);
+        final shopData = await client.from('shops').select('owner_id').eq('id', shopId).maybeSingle();
+        if (shopData != null) {
+          final ownerId = shopData['owner_id'] as String;
+          await client.from('profiles').update({'role': 'seller'}).eq('id', ownerId);
+        }
+      } catch (e) {
+        debugPrint('Error suspending shop in Supabase: $e');
+      }
     }
   }
 
