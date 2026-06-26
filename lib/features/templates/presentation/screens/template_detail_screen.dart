@@ -77,6 +77,14 @@ class _TemplateDetailScreenState extends State<TemplateDetailScreen>
           uri,
           mode: LaunchMode.externalApplication,
         );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Template berhasil diunduh ($format)'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } else {
         throw 'Tidak dapat membuka tautan.';
       }

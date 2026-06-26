@@ -25,23 +25,25 @@ class _SuperAdminUserDetailScreenState extends State<SuperAdminUserDetailScreen>
             return AlertDialog(
               backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
               title: const Text('Ubah Role Akses', style: TextStyle(fontWeight: FontWeight.bold)),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: ['Customer', 'Admin Toko', 'Super Admin'].map((role) {
-                  return RadioListTile<String>(
-                    title: Text(role, style: const TextStyle(fontWeight: FontWeight.w600)),
-                    value: role,
-                    groupValue: selectedRole,
-                    activeColor: Colors.purple.shade600,
-                    onChanged: (val) {
-                      if (val != null) {
-                        setDialogState(() {
-                          selectedRole = val;
-                        });
-                      }
-                    },
-                  );
-                }).toList(),
+              content: RadioGroup<String>(
+                groupValue: selectedRole,
+                onChanged: (val) {
+                  if (val != null) {
+                    setDialogState(() {
+                      selectedRole = val;
+                    });
+                  }
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: ['Customer', 'Admin Toko', 'Super Admin'].map((role) {
+                    return RadioListTile<String>(
+                      title: Text(role, style: const TextStyle(fontWeight: FontWeight.w600)),
+                      value: role,
+                      activeColor: Colors.purple.shade600,
+                    );
+                  }).toList(),
+                ),
               ),
               actions: [
                 TextButton(

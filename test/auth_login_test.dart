@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:goprint/features/auth/presentation/screens/login_screen.dart';
 import 'package:goprint/features/super_admin/presentation/screens/super_admin_shop_detail_screen.dart';
-import 'package:goprint/features/shop/data/mock_shops.dart';
 import 'package:goprint/domain/repositories/auth_repository.dart';
 import 'package:goprint/data/repositories/auth_repository_impl.dart';
 import 'package:goprint/data/models/user_model.dart';
