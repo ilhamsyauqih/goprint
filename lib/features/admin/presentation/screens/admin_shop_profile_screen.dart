@@ -397,7 +397,7 @@ class _AdminShopProfileScreenState extends State<AdminShopProfileScreen> {
           Switch(
             value: _isOpen,
             onChanged: _toggleShopStatus,
-            activeColor: isDark ? AppColors.teal300 : AppColors.teal700,
+            activeThumbColor: isDark ? AppColors.teal300 : AppColors.teal700,
           ),
         ],
       ),

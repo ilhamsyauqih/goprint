@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:goprint/app.dart';
@@ -26,6 +27,13 @@ void main() {
     profileStore.reset();
     appStateStore.reset();
     templateStore.reset();
+
+    const channel = MethodChannel('plugins.flutter.io/url_launcher');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+      await Future.delayed(const Duration(milliseconds: 200));
+      return true;
+    });
   });
 
   testWidgets('GoPrintApp starts with SplashScreen', (
@@ -242,9 +250,9 @@ void main() {
 
     // Chip "Semua" harus ada dan terpilih secara default
     expect(find.byType(TemplateCategoryChip), findsWidgets);
-    expect(find.text('Semua'), findsOneWidget);
-    expect(find.text('Surat Izin'), findsOneWidget);
-    expect(find.text('Cover'), findsOneWidget);
+    expect(find.widgetWithText(TemplateCategoryChip, 'Semua'), findsOneWidget);
+    expect(find.widgetWithText(TemplateCategoryChip, 'Surat Izin'), findsOneWidget);
+    expect(find.widgetWithText(TemplateCategoryChip, 'Cover'), findsOneWidget);
   });
 
   testWidgets('TemplateListScreen filter kategori mengubah daftar template', (
@@ -369,7 +377,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(home: TemplateDetailScreen(template: tpl)),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Tap tombol Download PDF
       await tester.tap(find.text('Download PDF'));
