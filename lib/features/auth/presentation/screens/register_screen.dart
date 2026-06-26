@@ -286,7 +286,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
             // ─── Seller Fields (Animated) ────────────────────────
             SizeTransition(
               sizeFactor: _fadeAnimation,
-              alignment: Alignment.topCenter,
+              axisAlignment: -1.0,
               child: SlideTransition(
                 position: _slideAnimation,
                 child: FadeTransition(
