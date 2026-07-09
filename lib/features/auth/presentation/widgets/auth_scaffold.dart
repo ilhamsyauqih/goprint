@@ -69,10 +69,12 @@ class AuthScaffold extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.print_rounded,
-                    color: Colors.white,
-                    size: 32,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(18),
+                    child: Image.asset(
+                      'assets/images/app_logo.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
